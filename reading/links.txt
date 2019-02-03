@@ -1,0 +1,11 @@
+CNNs for Visual Recognition (Stanford - Karpathy) : http://cs231n.github.io/convolutional-networks/
+
+Striving for Simplicity: The All Convolutional Net : https://arxiv.org/pdf/1412.6806.pdf
+
+Network in Network : https://arxiv.org/pdf/1312.4400v3.pdf
+
+Karpathy on ConvNet : http://karpathy.github.io/2014/09/02/what-i-learned-from-competing-against-a-convnet-on-imagenet/
+
+Guide to CNNs : https://adeshpande3.github.io/adeshpande3.github.io/A-Beginner's-Guide-To-Understanding-Convolutional-Neural-Networks-Part-2/
+
+Transfer Learning (Stanford - Karpathy) : https://cs231n.github.io/transfer-learning/
