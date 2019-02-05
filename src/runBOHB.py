@@ -117,4 +117,4 @@ def testWorker(budget):
 
 
 if __name__== '__main__':
-    runBOHB(1, 2, True)
+    runBOHB(1, 1, True)

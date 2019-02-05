@@ -39,7 +39,7 @@ def train_from_cfg(config):
         data_augmentations=None,  # Not set in this example
         save_model_str=None
     )
-    return(val_loss)
+    return(float(val_loss))
 
 # Scenario object
 # scenario = Scenario({"run_obj": "quality",   # we optimize quality (alternatively runtime)

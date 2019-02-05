@@ -3,10 +3,10 @@ import hpbandster.core.result as hpres
 import hpbandster.visualization as hpvis
 
 
-def generateViz(out_dir = '.'):
+def generateViz(result, out_dir = '.'):
 
     # load the example run from the log files
-    result = hpres.logged_results_to_HBS_result(out_dir)
+    # result = hpres.logged_results_to_HBS_result(out_dir)
 
     # get all executed runs
     all_runs = result.get_all_runs()

@@ -6,6 +6,7 @@ import time
 import torch
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
+from torch.utils.data import SubsetRandomSampler
 from torchsummary import summary
 
 import numpy as np
@@ -15,7 +16,7 @@ from cnn import ConfigurableNet
 from datasets import KMNIST, K49
 
 
-def eval(model, loader, device, train=False):
+def eval(model, loader, device, train_criterion, train=False):
     """
     Evaluation method
     :param model: Model to evaluate
@@ -25,11 +26,19 @@ def eval(model, loader, device, train=False):
     :return: accuracy on the data
     """
     true, pred = [], []
+    tot_loss = []
     with torch.no_grad():  # no gradient needed
         for images, labels in loader:
             images = images.to(device)
             labels = labels.to(device)
             outputs = model(images)
+            if type(train_criterion) == torch.nn.MSELoss:
+                one_hot = torch.zeros((len(labels), 10))
+                for i, l in enumerate(one_hot): one_hot[i][labels[i]] = 1
+                loss = train_criterion(outputs, one_hot)
+            else:
+                loss = train_criterion(outputs, labels)
+            tot_loss.append(loss)
             _, predicted = torch.max(outputs.data, 1)
             true.extend(labels)
             pred.extend(predicted)
@@ -37,7 +46,8 @@ def eval(model, loader, device, train=False):
         score = balanced_accuracy_score(true, pred)
         str_ = 'rain' if train else 'est'
         logging.info('T{0} Accuracy of the model on the {1} t{0} images: {2}%'.format(str_, len(true), 100 * score))
-    return score
+        tot_loss = np.mean(tot_loss)
+    return score, tot_loss
 
 
 def train(dataset,
@@ -48,6 +58,7 @@ def train(dataset,
           learning_rate=0.001,
           train_criterion=torch.nn.CrossEntropyLoss,
           model_optimizer=torch.optim.Adam,
+          opti_aux_param=False,
           data_augmentations=None,
           save_model_str=None):
     """
@@ -64,7 +75,10 @@ def train(dataset,
         If none only ToTensor is used
     :return:
     """
-    train_criterion = train_criterion()  # not instantiated until now
+    if train_criterion == torch.nn.MSELoss:
+        train_criterion = train_criterion(reduction='mean')  # not instantiated until now
+    else:
+        train_criterion = train_criterion()
 
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -86,14 +100,31 @@ def train(dataset,
     else:
         raise NotImplementedError
 
+    dataset_size = len(train_dataset)
+    indices = list(range(dataset_size))
+    validation_split = 0.3
+    split = int(np.floor(validation_split * dataset_size))
+    # if shuffle_dataset:
+    # np.random.seed()
+    np.random.shuffle(indices)
+    train_indices, val_indices = indices[split:], indices[:split]
+
+    # Creating PT data samplers and loaders:
+    train_sampler = SubsetRandomSampler(train_indices)
+    valid_sampler = SubsetRandomSampler(val_indices)
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=train_sampler)
+    validation_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=valid_sampler)
+
+
     # Make data batch iterable
     # Could modify the sampler to not uniformly random sample
-    train_loader = DataLoader(dataset=train_dataset,
-                              batch_size=batch_size,
-                              shuffle=True)
-    test_loader = DataLoader(dataset=test_dataset,
-                             batch_size=batch_size,
-                             shuffle=False)
+    # train_loader = DataLoader(dataset=train_dataset,
+    #                           batch_size=batch_size,
+    #                           shuffle=True)
+    # test_loader = DataLoader(dataset=test_dataset,
+    #                          batch_size=batch_size,
+    #                          shuffle=False)
 
     model = ConfigurableNet(model_config,
                             num_classes=train_dataset.n_classes,
@@ -109,7 +140,12 @@ def train(dataset,
     summary(model, (train_dataset.channels, train_dataset.img_rows, train_dataset.img_cols), device='cpu')
 
     # Train the model
-    optimizer = model_optimizer(model.parameters(), lr=learning_rate)
+    if model_optimizer == torch.optim.Adam:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate, amsgrad=opti_aux_param)
+    elif model_optimizer == torch.optim.SGD:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate, momentum=opti_aux_param)
+    else:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate)
     total_step = len(train_loader)
     train_time = time.time()
     epoch_times = []
@@ -121,7 +157,11 @@ def train(dataset,
             labels = labels.to(device)
 
             # Forward -> Backward <- passes
-            outputs = model(images)
+            outputs = model(images)    # outputs.detach().numpy()
+            if type(train_criterion) == torch.nn.MSELoss:
+                one_hot = torch.zeros((len(labels), 10))
+                for i, l in enumerate(one_hot): one_hot[i][labels[i]] = 1
+                labels = one_hot
             loss = train_criterion(outputs, labels)
             optimizer.zero_grad()  # zero out gradients for new minibatch
             loss.backward()
@@ -137,15 +177,18 @@ def train(dataset,
     logging.info('~+~' * 40)
     model.eval()
     test_time = time.time()
-    train_score = eval(model, train_loader, device, train=True)
-    test_score = eval(model, test_loader, device)
+    train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
+    # test_score = eval(model, test_loader, device)
+    validation_score, validation_loss = eval(model, validation_loader, device, train_criterion)
+    logging.info("Evaluation done")
     test_time = time.time() - test_time
-    if save_model_str:
-        # Save the model checkpoint can be restored via "model = torch.load(save_model_str)"
-        if os.path.exists(save_model_str):
-            save_model_str += '_'.join(time.ctime())
-        torch.save(model.state_dict(), save_model_str)
-    return train_score, test_score, train_time, test_time, total_model_params
+    # if save_model_str:
+    #     # Save the model checkpoint can be restored via "model = torch.load(save_model_str)"
+    #     if os.path.exists(save_model_str):
+    #         save_model_str += '_'.join(time.ctime())
+    #     torch.save(model.state_dict(), save_model_str)
+    logging.info("Returning from train()")
+    return train_score, train_loss, validation_score, validation_loss, train_time, test_time, total_model_params
 
 
 if __name__ == '__main__':
@@ -206,11 +249,13 @@ if __name__ == '__main__':
         logging.warning('Found unknown arguments!')
         logging.warning(str(unknowns))
         logging.warning('These will be ignored')
-
-    train(
+    # print(args)
+    # print(abcds)
+    a, b , d , e, f, g, h = train(
         args.dataset,  # dataset to use
         {  # model architecture
             'n_layers': 2,
+            # 'conv_layer': 1
             'n_conv_layer': 1
         },
         data_dir=args.data_dir,
@@ -222,3 +267,8 @@ if __name__ == '__main__':
         data_augmentations=None,  # Not set in this example
         save_model_str=args.model_path
     )
+    print("train_score: ", a)
+    print("test_score :", b)
+    print("train_time :", d)
+    print("test_time :", e)
+    print("total_model_params :", f)
