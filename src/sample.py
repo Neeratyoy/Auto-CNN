@@ -33,7 +33,7 @@ class MyWorker(Worker):
         # global dataset;
         data_dir = '../data'
         num_epochs = int(budget)
-        batch_size = config['batch_size'] #50
+        batch_size = int(config['batch_size']) #50
         learning_rate = config['learning_rate']
         training_loss = loss_dict[config['training_criterion']]
         # if config['training_criterion'] == 'MSELoss':
@@ -119,7 +119,8 @@ class MyWorker(Worker):
         # TRAINING HYPERPARAMS #
         ########################
         loss = CSH.CategoricalHyperparameter('training_criterion', choices=['cross_entropy'], default_value='cross_entropy') # choices=['mse', 'cross_entropy']
-        batch = CSH.UniformIntegerHyperparameter('batch_size', lower=32, upper=1024, default_value=128)
+        # batch = CSH.UniformIntegerHyperparameter('batch_size', lower=32, upper=1024, default_value=128)
+        batch = CSH.CategoricalHyperparameter('batch_size', choices=['50', '100', '200', '500', '1000'], default_value='50')
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
         config_space.add_hyperparameters([loss, batch])
@@ -129,7 +130,8 @@ class MyWorker(Worker):
         ############################
         n_conv_layer = CSH.UniformIntegerHyperparameter('n_conv_layer', lower=1, upper=3, default_value=1, log=False)
         n_fc_layer = CSH.UniformIntegerHyperparameter('n_fc_layer', lower=1, upper=2, default_value=1, log=False)
-        config_space.add_hyperparameters([n_conv_layer, n_fc_layer])
+        dropout = CSH.CategoricalHyperparameter('dropout', choices=['True', 'False'], default_value='False')
+        config_space.add_hyperparameters([n_conv_layer, n_fc_layer, dropout])
         # LAYER 1 PARAMS
         kernel_1 = CSH.CategoricalHyperparameter('kernel_1', choices=['3', '5', '7'], default_value='5')
         padding_1 = CSH.UniformIntegerHyperparameter('padding_1', lower=0, upper=3, default_value=2)
@@ -138,8 +140,8 @@ class MyWorker(Worker):
         activation_1 = CSH.CategoricalHyperparameter('activation_1', choices=['tanh', 'relu', 'sigmoid'], default_value='tanh')
         maxpool_1 = CSH.CategoricalHyperparameter('maxpool_1', choices=['True', 'False'], default_value='True')
         maxpool_kernel_1 = CSH.UniformIntegerHyperparameter('maxpool_kernel_1', lower=2, upper=6, default_value=6)
-        dropout_1 = CSH.UniformFloatHyperparameter('dropout_1', lower=0, upper=0.3, default_value=0)
-        config_space.add_hyperparameters([kernel_1, padding_1, stride_1, activation_1, maxpool_1, maxpool_kernel_1, batchnorm_1, dropout_1])
+        # dropout_1 = CSH.UniformFloatHyperparameter('dropout_1', lower=0, upper=0.3, default_value=0)
+        config_space.add_hyperparameters([kernel_1, padding_1, stride_1, activation_1, maxpool_1, maxpool_kernel_1, batchnorm_1]) #, dropout_1])
         # LAYER 1 CONDITIONALS
         maxpool_cond_1 = CS.NotEqualsCondition(maxpool_1, stride_1, 2)   # Convolution with stride 2 is equivalent to Maxpool
         maxpool_kernel_cond_1 = CS.EqualsCondition(maxpool_kernel_1, maxpool_1, 'True')
@@ -164,8 +166,8 @@ class MyWorker(Worker):
         activation_2 = CSH.CategoricalHyperparameter('activation_2', choices=['tanh', 'relu', 'sigmoid'], default_value='tanh')
         maxpool_2 = CSH.CategoricalHyperparameter('maxpool_2', choices=['True', 'False'], default_value='True')
         maxpool_kernel_2 = CSH.UniformIntegerHyperparameter('maxpool_kernel_2', lower=2, upper=6, default_value=6)
-        dropout_2 = CSH.UniformFloatHyperparameter('dropout_2', lower=0, upper=0.3, default_value=0)
-        config_space.add_hyperparameters([kernel_2, padding_2, stride_2, activation_2, maxpool_2, maxpool_kernel_2, batchnorm_2, dropout_2])
+        # dropout_2 = CSH.UniformFloatHyperparameter('dropout_2', lower=0, upper=0.3, default_value=0)
+        config_space.add_hyperparameters([kernel_2, padding_2, stride_2, activation_2, maxpool_2, maxpool_kernel_2, batchnorm_2]) #, dropout_2])
         # LAYER 2 CONDITIONALS
         maxpool_cond_2 = CS.NotEqualsCondition(maxpool_2, stride_2, 2)   # Convolution with stride 2 is equivalent to Maxpool
         maxpool_kernel_cond_2 = CS.EqualsCondition(maxpool_kernel_2, maxpool_2, 'True')
@@ -186,10 +188,10 @@ class MyWorker(Worker):
         stride_2_cond = CS.InCondition(stride_2, n_conv_layer, [2, 3])
         batchnorm_2_cond = CS.EqualsCondition(batchnorm_2, n_conv_layer, 3)
         activation_2_cond = CS.InCondition(activation_2, n_conv_layer, [2, 3])
-        dropout_2_cond = CS.EqualsCondition(dropout_2, n_conv_layer, 2)
+        # dropout_2_cond = CS.InCondition(dropout_2, n_conv_layer, [2, 3])
         maxpool_2_cond = CS.AndConjunction(CS.InCondition(maxpool_2, n_conv_layer, [2, 3]), maxpool_cond_2)
         maxpool_kernel_2_cond = CS.AndConjunction(CS.InCondition(maxpool_kernel_2, n_conv_layer, [2, 3]), maxpool_kernel_cond_2)
-        config_space.add_conditions([kernel_2_cond, padding_2_cond, stride_2_cond, activation_2_cond, maxpool_2_cond, maxpool_kernel_2_cond, batchnorm_2_cond, dropout_2_cond])
+        config_space.add_conditions([kernel_2_cond, padding_2_cond, stride_2_cond, activation_2_cond, maxpool_2_cond, maxpool_kernel_2_cond, batchnorm_2_cond]) #, dropout_2_cond])
 
         # LAYER 3 PARAMS
         kernel_3 = CSH.CategoricalHyperparameter('kernel_3', choices=['3', '5', '7'], default_value='5')
@@ -199,8 +201,8 @@ class MyWorker(Worker):
         activation_3 = CSH.CategoricalHyperparameter('activation_3', choices=['tanh', 'relu', 'sigmoid'], default_value='tanh')
         maxpool_3 = CSH.CategoricalHyperparameter('maxpool_3', choices=['True', 'False'], default_value='True')
         maxpool_kernel_3 = CSH.UniformIntegerHyperparameter('maxpool_kernel_3', lower=2, upper=6, default_value=6)
-        dropout_3 = CSH.UniformFloatHyperparameter('dropout_3', lower=0, upper=0.3, default_value=0)
-        config_space.add_hyperparameters([kernel_3, padding_3, stride_3, activation_3, maxpool_3, maxpool_kernel_3, batchnorm_3, dropout_3])
+        # dropout_3 = CSH.UniformFloatHyperparameter('dropout_3', lower=0, upper=0.3, default_value=0)
+        config_space.add_hyperparameters([kernel_3, padding_3, stride_3, activation_3, maxpool_3, maxpool_kernel_3, batchnorm_3]) #, dropout_3])
         # LAYER 3 CONDITIONALS
         maxpool_cond_3 = CS.NotEqualsCondition(maxpool_3, stride_3, 2)   # Convolution with stride 2 is equivalent to Maxpool
         maxpool_kernel_cond_3 = CS.EqualsCondition(maxpool_kernel_3, maxpool_3, 'True')
@@ -221,10 +223,10 @@ class MyWorker(Worker):
         stride_3_cond = CS.EqualsCondition(stride_3, n_conv_layer, 3)
         batchnorm_3_cond = CS.EqualsCondition(batchnorm_3, n_conv_layer, 3)
         activation_3_cond = CS.EqualsCondition(activation_3, n_conv_layer, 3)
-        dropout_3_cond = CS.EqualsCondition(dropout_3, n_conv_layer, 3)
+        # dropout_3_cond = CS.EqualsCondition(dropout_3, n_conv_layer, 3)
         maxpool_3_cond = CS.AndConjunction(CS.InCondition(maxpool_3, n_conv_layer, [2, 3]), maxpool_cond_3)
         maxpool_kernel_3_cond = CS.AndConjunction(CS.InCondition(maxpool_kernel_3, n_conv_layer, [2, 3]), maxpool_kernel_cond_3)
-        config_space.add_conditions([kernel_3_cond, padding_3_cond, stride_3_cond, activation_3_cond, maxpool_3_cond, maxpool_kernel_3_cond, batchnorm_3_cond, dropout_3_cond])
+        config_space.add_conditions([kernel_3_cond, padding_3_cond, stride_3_cond, activation_3_cond, maxpool_3_cond, maxpool_kernel_3_cond, batchnorm_3_cond]) #, dropout_3_cond])
 
         # COMPLICATED ASSUMPTIONS MADE EMPIRICALLY TO IMPOSE CONSTRAINTS ON MAXPOOL SIZE
         # SUCH THAT THE CONFIGURATIONS SAMPLED BY THE CONFIGURATOR DOESN'T YIELD AN
@@ -239,7 +241,7 @@ class MyWorker(Worker):
         for_two_layers_1 = CS.ForbiddenAndConjunction(
                 # Disallowing large maxpool kernel in first layer for a 2-layer convoluiton
                 CS.ForbiddenEqualsClause(n_conv_layer, 2),
-                CS.ForbiddenInClause(maxpool_kernel_1, [4,5,6]),
+                CS.ForbiddenInClause(maxpool_kernel_1, [3,4,5,6]),
                 CS.ForbiddenInClause(maxpool_kernel_2, [4,5,6])
                 # CS.ForbiddenEqualsClause(maxpool_2, 'True')
         )
@@ -299,10 +301,10 @@ class MyWorker(Worker):
         # Choosing min size as height/width of image, max as height x width of image
         # Max of 784 >>> output of the convolutions and pooling, hence adequately expressed
         fc1 = CSH.UniformIntegerHyperparameter('fc_1', lower=28, upper=784, default_value=500, log=True)
-        fc_dropout_1 = CSH.UniformFloatHyperparameter('fc_dropout_1', lower=0, upper=0.7, default_value=0)
+        # fc_dropout_1 = CSH.UniformFloatHyperparameter('fc_dropout_1', lower=0, upper=0.7, default_value=0)
         fc2 = CSH.UniformIntegerHyperparameter('fc_2', lower=28, upper=784, default_value=500, log=True)
-        fc_dropout_2 = CSH.UniformFloatHyperparameter('fc_dropout_2', lower=0, upper=0.7, default_value=0)
-        config_space.add_hyperparameters([fc1, fc_dropout_1])
+        # fc_dropout_2 = CSH.UniformFloatHyperparameter('fc_dropout_2', lower=0, upper=0.7, default_value=0)
+        config_space.add_hyperparameters([fc1])
         # fc1_cond = CS.InCondition(fc1, n_fc_layer, [2,3])
         # fc2_cond = CS.EqualsCondition(fc2, n_fc_layer, 3)
         # config_space.add_conditions([fc1_cond, fc2_cond])
@@ -356,7 +358,8 @@ if __name__ == "__main__":
     bohb = BOHB(  configspace = w.get_configspace(),
                   run_id = args.run_id, nameserver='127.0.0.1',
                   min_budget=args.min_budget, max_budget=args.max_budget,
-                  result_logger=result_logger)
+                  result_logger=result_logger,
+                  top_n_percent=15)
     res = bohb.run(n_iterations=args.n_iterations )
     bohb.shutdown(shutdown_workers=True)
     NS.shutdown()

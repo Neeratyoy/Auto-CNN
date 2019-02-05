@@ -29,6 +29,9 @@ class ConfigurableNet(nn.Module):
         super(ConfigurableNet, self).__init__()
         self.config = config
 
+        dropout_dict = {'True': True, 'False': False}
+        dropout = dropout_dict[config['dropout']]
+
         # Keeping track of internals like changeing dimensions
         n_convs = config['n_conv_layer']
         config['n_layers'] = n_convs + config['n_fc_layer']
@@ -87,7 +90,9 @@ class ConfigurableNet(nn.Module):
                 l.append(act)
 
                 # Adding Dropout
-                l.append(nn.Dropout(config['dropout_'+str(layer+1)]))
+                if dropout:
+                    l.append(nn.Dropout(0.2))
+                    # l.append(nn.Dropout(config['dropout_'+str(layer+1)]))
 
                 # do max pooling yes or no?
                 maxpool_dict = {'True':True, 'False':False}
@@ -121,7 +126,9 @@ class ConfigurableNet(nn.Module):
                 output_count = config['fc_'+str(layer+1-config['n_conv_layer'])]
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
-                lay.append(nn.Dropout(config['fc_dropout_'+str(layer+1-config['n_conv_layer'])]))
+                if dropout:
+                    lay.append(nn.Dropout(0.5))
+                    # lay.append(nn.Dropout(config['fc_dropout_'+str(layer+1-config['n_conv_layer'])]))
                 s = nn.Sequential(*lay)
                 self.mymodules.append(s)
                 self.layers.append(s)
