@@ -60,7 +60,8 @@ def train(dataset,
           model_optimizer=torch.optim.Adam,
           opti_aux_param=False,
           data_augmentations=None,
-          save_model_str=None):
+          save_model_str=None,
+          test=False):
     """
     Training loop for configurableNet.
     :param dataset: which dataset to load (str)
@@ -100,31 +101,31 @@ def train(dataset,
     else:
         raise NotImplementedError
 
-    dataset_size = len(train_dataset)
-    indices = list(range(dataset_size))
-    validation_split = 0.3
-    split = int(np.floor(validation_split * dataset_size))
-    # if shuffle_dataset:
-    # np.random.seed()
-    np.random.shuffle(indices)
-    train_indices, val_indices = indices[split:], indices[:split]
+    if test is False:
+        dataset_size = len(train_dataset)
+        indices = list(range(dataset_size))
+        validation_split = 0.3
+        split = int(np.floor(validation_split * dataset_size))
+        # if shuffle_dataset:
+        # np.random.seed()
+        np.random.shuffle(indices)
+        train_indices, val_indices = indices[split:], indices[:split]
 
-    # Creating PT data samplers and loaders:
-    train_sampler = SubsetRandomSampler(train_indices)
-    valid_sampler = SubsetRandomSampler(val_indices)
+        # Creating PT data samplers and loaders:
+        train_sampler = SubsetRandomSampler(train_indices)
+        valid_sampler = SubsetRandomSampler(val_indices)
 
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=train_sampler)
-    validation_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=valid_sampler)
-
-
-    # Make data batch iterable
-    # Could modify the sampler to not uniformly random sample
-    # train_loader = DataLoader(dataset=train_dataset,
-    #                           batch_size=batch_size,
-    #                           shuffle=True)
-    # test_loader = DataLoader(dataset=test_dataset,
-    #                          batch_size=batch_size,
-    #                          shuffle=False)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=train_sampler)
+        validation_loader = DataLoader(train_dataset, batch_size=batch_size, sampler=valid_sampler)
+    else:
+        # Make data batch iterable
+        # Could modify the sampler to not uniformly random sample
+        train_loader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  shuffle=True)
+        test_loader = DataLoader(dataset=test_dataset,
+                                 batch_size=batch_size,
+                                 shuffle=False)
 
     model = ConfigurableNet(model_config,
                             num_classes=train_dataset.n_classes,
@@ -134,7 +135,7 @@ def train(dataset,
     total_model_params = np.sum(p.numel() for p in model.parameters())
 
     equal_freq = [1 / train_dataset.n_classes for _ in range(train_dataset.n_classes)]
-    logging.debug('Train Dataset balanced: {}'.format(np.allclose(test_dataset.class_frequency, equal_freq)))
+    logging.debug('Train Dataset balanced: {}'.format(np.allclose(train_dataset.class_frequency, equal_freq)))
     logging.debug(' Test Dataset balanced: {}'.format(np.allclose(test_dataset.class_frequency, equal_freq)))
     logging.info('Generated Network:')
     summary(model, (train_dataset.channels, train_dataset.img_rows, train_dataset.img_cols), device='cpu')
@@ -178,17 +179,19 @@ def train(dataset,
     model.eval()
     test_time = time.time()
     train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
-    # test_score = eval(model, test_loader, device)
-    validation_score, validation_loss = eval(model, validation_loader, device, train_criterion)
+    if test:
+        test_score, test_loss = eval(model, test_loader, device, train_criterion)
+    else:
+        test_score, test_loss = eval(model, validation_loader, device, train_criterion)
     logging.info("Evaluation done")
     test_time = time.time() - test_time
-    # if save_model_str:
-    #     # Save the model checkpoint can be restored via "model = torch.load(save_model_str)"
-    #     if os.path.exists(save_model_str):
-    #         save_model_str += '_'.join(time.ctime())
-    #     torch.save(model.state_dict(), save_model_str)
+    if save_model_str:
+        # Save the model checkpoint can be restored via "model = torch.load(save_model_str)"
+        if os.path.exists(save_model_str):
+            save_model_str += '_'.join(time.ctime())
+        torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
-    return train_score, train_loss, validation_score, validation_loss, train_time, test_time, total_model_params
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params
 
 
 if __name__ == '__main__':
