@@ -1,0 +1,10 @@
+Config: bohb/K49/2_2_20/
+Trained: KMNIST
+98.445%    92.221%
+Transfered to: K49
+95.567%    87.191%
+
+
+Config: bohb/KMNIST/2_2_20
+Trained: KMNIST
+97.93%    91.76%

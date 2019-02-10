@@ -17,7 +17,7 @@ class ConfigurableNet(nn.Module):
         # output_size=(w+2*pad-(d(k-1)+1))/s+1, https://github.com/vlfeat/matconvnet/issues/1010
         # ^ works for both maxpool=T and maxpool=F
 
-    def __init__(self, config, num_classes=10, height=28, width=28, channels=1):
+    def __init__(self, old_config, new_config, num_classes=10, height=28, width=28, channels=1):
         """
         [PyTorch syntax] The constructor: Declare all the layers to be used
         Configurable network for image classification
@@ -27,20 +27,20 @@ class ConfigurableNet(nn.Module):
         :param width: image width
         """
         super(ConfigurableNet, self).__init__()
-        self.config = config
+        self.config = old_config
         dropout_dict = {'True': True, 'False': False}
-        dropout = dropout_dict[config['dropout']]
+        dropout = dropout_dict[old_config['dropout']]
         batchnorm_dict = {'True':True, 'False':False}
-        batchnorm = batchnorm_dict[config['batchnorm']]
+        batchnorm = batchnorm_dict[old_config['batchnorm']]
 
-        channel_dict = {'1': int(config['channel_1'])}
-        for i in range(2, config['n_conv_layer']+1):
+        channel_dict = {'1': int(new_config['channel_1'])}
+        for i in range(2, old_config['n_conv_layer']+1):
             # Multiplying the multiplicative factor with previous channel size
-            channel_dict[str(i)] = int(np.floor(float(config['channel_'+str(i)]) * channel_dict[str(i-1)]))
+            channel_dict[str(i)] = int(np.floor(float(new_config['channel_'+str(i)]) * channel_dict[str(i-1)]))
 
         # Keeping track of internals like changeing dimensions
-        n_convs = config['n_conv_layer']
-        n_fc_layers = config['n_fc_layer']
+        n_convs = old_config['n_conv_layer']
+        n_fc_layers = new_config['n_fc_layer']
         n_layers = n_convs + n_fc_layers
         conv_layer = 0
         self.layers = []
@@ -52,9 +52,9 @@ class ConfigurableNet(nn.Module):
         for layer in range(n_layers):
             if n_convs >= 1:  # This way it only supports multiple convolutional layers at the beginning (not inbetween)
                 l = []  # Conv layer can be sequential layer with Batch Norm and pooling
-                padding = config['padding_'+str(layer+1)] # 5 0 #2
-                stride = config['stride_'+str(layer+1)] # 5 0 #21
-                kernel_size = int(config['kernel_'+str(layer+1)]) # 5
+                padding = old_config['padding_'+str(layer+1)] # 5 0 #2
+                stride = old_config['stride_'+str(layer+1)] # 5 0 #21
+                kernel_size = int(old_config['kernel_'+str(layer+1)]) # 5
                 dilation = 1  # fixed
                 # if conv_layer == 0:
                 #     out_channels = 3
@@ -83,9 +83,9 @@ class ConfigurableNet(nn.Module):
                     b = nn.BatchNorm2d(channels)
                     l.append(b)
 
-                # add activation function
-                # determine activation function
-                activation = config['activation']
+                # determine activation function,
+                # activation = config['activation_'+str(layer+1)]
+                activation = old_config['activation']
                 # activation = 'tanh'
                 if activation == 'relu':
                     act = nn.ReLU()
@@ -106,15 +106,14 @@ class ConfigurableNet(nn.Module):
                 # do max pooling yes or no?
                 maxpool_dict = {'True':True, 'False':False}
                 try:
-                    max_pooling = maxpool_dict[config['maxpool_'+str(layer+1)]]
+                    max_pooling = maxpool_dict[old_config['maxpool_'+str(layer+1)]]
                 except KeyError:
                     max_pooling = False
                 # max_pooling = True
                 if max_pooling:
-                    m_ks = config['maxpool_kernel_'+str(layer+1)] # 6
+                    m_ks = old_config['maxpool_kernel_'+str(layer+1)] # 6
                     m_stride = m_ks #6
-                    pool = nn.MaxPool2d(kernel_size=m_ks,
-                                        stride=m_stride)
+                    pool = nn.MaxPool2d(kernel_size=m_ks, stride=m_stride)
                     l.append(pool)
                     height = self._update_size(height, 0, 1, m_ks, m_stride)
                     width = self._update_size(width, 0, 1, m_ks, m_stride)
@@ -132,7 +131,7 @@ class ConfigurableNet(nn.Module):
                     channels = height * width * channels
                     n_convs -= 1
                     #           in_channels, out_channels
-                output_count = config['fc_'+str(layer+1-config['n_conv_layer'])]
+                output_count = 500 #new_config['fc_'+str(layer+1-config['n_conv_layer'])]
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
                 if batchnorm:
@@ -153,21 +152,10 @@ class ConfigurableNet(nn.Module):
                 lay.append(act)
                 if dropout:
                     lay.append(nn.Dropout(0.5))
-                    # lay.append(nn.Dropout(config['fc_dropout_'+str(layer+1-config['n_conv_layer'])]))
-                # if batchnorm:
-                #     b = nn.BatchNorm2d(channels)
-                #     lay.append(b)
                 s = nn.Sequential(*lay)
                 self.mymodules.append(s)
                 self.layers.append(s)
-                # lay = nn.Linear(channels, output_count)
-                # self.mymodules.append(lay)
-                # self.layers.append(lay)
                 channels = output_count  # update the channels to keep track how many inputs lead to the next layer
-                # lay = nn.Linear(channels, 500)
-                # self.mymodules.append(lay)
-                # self.layers.append(lay)
-                # channels = 500  # update the channels to keep track how many inputs lead to the next layer
 
             # handle final fully connected layer
             else:

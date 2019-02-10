@@ -83,8 +83,8 @@ class ConfigurableNet(nn.Module):
                     b = nn.BatchNorm2d(channels)
                     l.append(b)
 
-                # add activation function
-                # determine activation function
+                # determine activation function,
+                # activation = config['activation_'+str(layer+1)]
                 activation = config['activation']
                 # activation = 'tanh'
                 if activation == 'relu':
@@ -132,10 +132,10 @@ class ConfigurableNet(nn.Module):
                     channels = height * width * channels
                     n_convs -= 1
                     #           in_channels, out_channels
-                output_count = config['fc_'+str(layer+1-config['n_conv_layer'])]
+                output_count = 500 #config['fc_'+str(layer+1-config['n_conv_layer'])]
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
-                if batchnorm:
+                if config['batchnorm']=='True':
                     b = nn.BatchNorm1d(output_count)
                     lay.append(b)
                 # determine activation function
@@ -151,12 +151,8 @@ class ConfigurableNet(nn.Module):
                     # Add more activation funcs?
                     raise NotImplementedError
                 lay.append(act)
-                if dropout:
+                if config['dropout']=='True':
                     lay.append(nn.Dropout(0.5))
-                    # lay.append(nn.Dropout(config['fc_dropout_'+str(layer+1-config['n_conv_layer'])]))
-                # if batchnorm:
-                #     b = nn.BatchNorm2d(channels)
-                #     lay.append(b)
                 s = nn.Sequential(*lay)
                 self.mymodules.append(s)
                 self.layers.append(s)

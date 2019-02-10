@@ -12,7 +12,7 @@ from torchsummary import summary
 import numpy as np
 from sklearn.metrics import balanced_accuracy_score
 
-from cnn import ConfigurableNet
+from cnn_small import ConfigurableNet
 from datasets import KMNIST, K49
 
 
@@ -147,12 +147,12 @@ def train(dataset,
     summary(model, (train_dataset.channels, train_dataset.img_rows, train_dataset.img_cols), device='cpu')
 
     # Train the model
-    if model_optimizer == torch.optim.Adam:
-        optimizer = model_optimizer(model.parameters(), lr=learning_rate, amsgrad=opti_aux_param)
-    elif model_optimizer == torch.optim.SGD:
-        optimizer = model_optimizer(model.parameters(), lr=learning_rate, momentum=opti_aux_param)
-    else:
-        optimizer = model_optimizer(model.parameters(), lr=learning_rate)
+    # if model_optimizer == torch.optim.Adam:
+    #     optimizer = model_optimizer(model.parameters(), lr=learning_rate, amsgrad=opti_aux_param)
+    # elif model_optimizer == torch.optim.SGD:
+    #     optimizer = model_optimizer(model.parameters(), lr=learning_rate, momentum=opti_aux_param)
+    # else:
+    optimizer = model_optimizer(model.parameters(), lr=learning_rate)
     total_step = len(train_loader)
     train_time = time.time()
     epoch_times = []
@@ -198,87 +198,87 @@ def train(dataset,
             save_model_str += '_'.join(time.ctime())
         torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
-    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params
 
-
-if __name__ == '__main__':
-    """
-    This is just an example of how you can use train and evaluate to interact with the configurable network
-    """
-    loss_dict = {'cross_entropy': torch.nn.CrossEntropyLoss,
-                 'mse': torch.nn.MSELoss}
-    opti_dict = {'adam': torch.optim.Adam,
-                 'adad': torch.optim.Adadelta,
-                 'sgd': torch.optim.SGD}
-
-    cmdline_parser = argparse.ArgumentParser('ML4AAD final project')
-
-    cmdline_parser.add_argument('-d', '--dataset',
-                                default='KMNIST',
-                                help='Which dataset to evaluate on.',
-                                choices=['KMNIST', 'K49'],
-                                type=str.upper)
-    cmdline_parser.add_argument('-e', '--epochs',
-                                default=10,
-                                help='Number of epochs',
-                                type=int)
-    cmdline_parser.add_argument('-b', '--batch_size',
-                                default=100,
-                                help='Batch size',
-                                type=int)
-    cmdline_parser.add_argument('-D', '--data_dir',
-                                default='../data',
-                                help='Directory in which the data is stored (can be downloaded)')
-    cmdline_parser.add_argument('-l', '--learning_rate',
-                                default=0.001,
-                                help='Optimizer learning rate',
-                                type=float)
-    cmdline_parser.add_argument('-L', '--training_loss',
-                                default='cross_entropy',
-                                help='Which loss to use during training',
-                                choices=list(loss_dict.keys()),
-                                type=str)
-    cmdline_parser.add_argument('-o', '--optimizer',
-                                default='adam',
-                                help='Which optimizer to use during training',
-                                choices=list(opti_dict.keys()),
-                                type=str)
-    cmdline_parser.add_argument('-m', '--model_path',
-                                default=None,
-                                help='Path to store model',
-                                type=str)
-    cmdline_parser.add_argument('-v', '--verbose',
-                                default='INFO',
-                                choices=['INFO', 'DEBUG'],
-                                help='verbosity')
-    args, unknowns = cmdline_parser.parse_known_args()
-    log_lvl = logging.INFO if args.verbose == 'INFO' else logging.DEBUG
-    logging.basicConfig(level=log_lvl)
-
-    if unknowns:
-        logging.warning('Found unknown arguments!')
-        logging.warning(str(unknowns))
-        logging.warning('These will be ignored')
-    # print(args)
-    # print(abcds)
-    a, b , d , e, f, g, h = train(
-        args.dataset,  # dataset to use
-        {  # model architecture
-            'n_layers': 2,
-            # 'conv_layer': 1
-            'n_conv_layer': 1
-        },
-        data_dir=args.data_dir,
-        num_epochs=args.epochs,
-        batch_size=args.batch_size,
-        learning_rate=args.learning_rate,
-        train_criterion=loss_dict[args.training_loss],
-        model_optimizer=opti_dict[args.optimizer],
-        data_augmentations=None,  # Not set in this example
-        save_model_str=args.model_path
-    )
-    print("train_score: ", a)
-    print("test_score :", b)
-    print("train_time :", d)
-    print("test_time :", e)
-    print("total_model_params :", f)
+#
+# if __name__ == '__main__':
+#     """
+#     This is just an example of how you can use train and evaluate to interact with the configurable network
+#     """
+#     loss_dict = {'cross_entropy': torch.nn.CrossEntropyLoss,
+#                  'mse': torch.nn.MSELoss}
+#     opti_dict = {'adam': torch.optim.Adam,
+#                  'adad': torch.optim.Adadelta,
+#                  'sgd': torch.optim.SGD}
+#
+#     cmdline_parser = argparse.ArgumentParser('ML4AAD final project')
+#
+#     cmdline_parser.add_argument('-d', '--dataset',
+#                                 default='KMNIST',
+#                                 help='Which dataset to evaluate on.',
+#                                 choices=['KMNIST', 'K49'],
+#                                 type=str.upper)
+#     cmdline_parser.add_argument('-e', '--epochs',
+#                                 default=10,
+#                                 help='Number of epochs',
+#                                 type=int)
+#     cmdline_parser.add_argument('-b', '--batch_size',
+#                                 default=100,
+#                                 help='Batch size',
+#                                 type=int)
+#     cmdline_parser.add_argument('-D', '--data_dir',
+#                                 default='../data',
+#                                 help='Directory in which the data is stored (can be downloaded)')
+#     cmdline_parser.add_argument('-l', '--learning_rate',
+#                                 default=0.001,
+#                                 help='Optimizer learning rate',
+#                                 type=float)
+#     cmdline_parser.add_argument('-L', '--training_loss',
+#                                 default='cross_entropy',
+#                                 help='Which loss to use during training',
+#                                 choices=list(loss_dict.keys()),
+#                                 type=str)
+#     cmdline_parser.add_argument('-o', '--optimizer',
+#                                 default='adam',
+#                                 help='Which optimizer to use during training',
+#                                 choices=list(opti_dict.keys()),
+#                                 type=str)
+#     cmdline_parser.add_argument('-m', '--model_path',
+#                                 default=None,
+#                                 help='Path to store model',
+#                                 type=str)
+#     cmdline_parser.add_argument('-v', '--verbose',
+#                                 default='INFO',
+#                                 choices=['INFO', 'DEBUG'],
+#                                 help='verbosity')
+#     args, unknowns = cmdline_parser.parse_known_args()
+#     log_lvl = logging.INFO if args.verbose == 'INFO' else logging.DEBUG
+#     logging.basicConfig(level=log_lvl)
+#
+#     if unknowns:
+#         logging.warning('Found unknown arguments!')
+#         logging.warning(str(unknowns))
+#         logging.warning('These will be ignored')
+#     # print(args)
+#     # print(abcds)
+#     a, b , d , e, f, g, h = train(
+#         args.dataset,  # dataset to use
+#         {  # model architecture
+#             'n_layers': 2,
+#             # 'conv_layer': 1
+#             'n_conv_layer': 1
+#         },
+#         data_dir=args.data_dir,
+#         num_epochs=args.epochs,
+#         batch_size=args.batch_size,
+#         learning_rate=args.learning_rate,
+#         train_criterion=loss_dict[args.training_loss],
+#         model_optimizer=opti_dict[args.optimizer],
+#         data_augmentations=None,  # Not set in this example
+#         save_model_str=args.model_path
+#     )
+#     print("train_score: ", a)
+#     print("test_score :", b)
+#     print("train_time :", d)
+#     print("test_time :", e)
+#     print("total_model_params :", f)
