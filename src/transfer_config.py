@@ -153,10 +153,6 @@ if __name__ == "__main__":
     id2conf = result.get_id2config_mapping()
     inc_id = result.get_incumbent_id()
     inc_config = id2conf[inc_id]['config']
-    save_config(args.config_dir, args.out_dir, 'parent')
-    print("Saving")
-    import time
-    time.sleep(10)
 
     # print(args)
     # print(kwargs)
@@ -184,6 +180,8 @@ if __name__ == "__main__":
     NS.shutdown()
     # Waiting for all workers and services to shutdown
     time.sleep(2)
+    # Saving parent config - IMPORTANT for final numbers
+    save_config(args.config_dir, args.out_dir, 'parent')
 
     # Extracting results
     id2config = res.get_id2config_mapping()
@@ -194,76 +192,15 @@ if __name__ == "__main__":
     print('Total budget corresponds to %.1f full function evaluations.'%(sum([r.budget for r in res.get_all_runs()])/20))
     print('===' * 40)
     print('Best found configuration:', id2config[incumbent]['config'])
-
     save_config(args.out_dir, args.out_dir, 'best')
-#     print(res.get_runs_by_id(incumbent))
-#     print('===' * 40)
-#     print('~+~' * 40)
-#     # print("Generating plots for BOHB run")
-#     print('~+~' * 40)
-#     # try:
-#     #     generateLossComparison(args.out_dir, show = args.show_plots)
-#     #     generateViz(args.out_dir, show = args.show_plots)
-#     # except:
-#     #     print("Issue with plot generation! Not all plots may have been generated.")
-#     print('~+~' * 40)
-#     print('~+~' * 40)
-#     print('~+~' * 40)
-#     print('===' * 40)
-#     # print("BUILDING AND EVALUATING INCUMBENT CONFIGURATION ON FULL TRAINING AND TEST SETS")
-#     # print('===' * 40)
-#     # result = hpres.logged_results_to_HBS_result(args.out_dir)
-#     # id2conf = result.get_id2config_mapping()
-#     # inc_id = result.get_incumbent_id()
-#     inc_config = id2config[incumbent]['config']
-#
-#     if config['model_optimizer'] == 'adam':
-#         opti_aux_param = bool(config['amsgrad'])    # Converting to bool, val of AMSGrad param
-#     elif config['model_optimizer'] == 'sgd':
-#         opti_aux_param = config['momentum']
-#     else:
-#         opti_aux_param = None
-#     opti_dict = {'adam': torch.optim.Adam,
-#                  'adad': torch.optim.Adadelta,
-#                  'sgd': torch.optim.SGD}
-#     _, _, _, _, _, _, _, model = train(
-#         dataset=args.dataset,  # dataset to use
-#         model_config=inc_config,
-#         data_dir=args.data_dir,
-#         num_epochs=args.max_budget,
-#         batch_size=int(inc_config['batch_size']),
-#         learning_rate=int(inc_config['learning_rate']),
-#         train_criterion=torch.nn.CrossEntropyLoss,
-#         model_optimizer=opti_dict[inc_config['model_optimizer']],
-#         opti_aux_param=opti_aux_param,
-#         data_augmentations=None,  # Not set in this example
-#         save_model_str=None,
-#         test=True,
-#         load_model=None,
-#         load_config=None
-#     )
-#
-#     # Starting server to communicate between target algorithm and BOHB
-#     NS = hpns.NameServer(run_id=args.run_id, host='127.0.0.1', port=None)
-#     NS.start()
-#     t = TransferWorker(sleep_interval = 0, nameserver='127.0.0.1', run_id=args.run_id)
-#     t.run(background=True)
-#     # Logging BOHB runs
-#     result_logger = hpres.json_result_logger(directory=args.out_dir, overwrite=True)
-#     # Configuring BOHB
-#     bohb = BOHB(  configspace = t.get_configspace(),
-#                   run_id = args.run_id, nameserver='127.0.0.1',
-#                   min_budget=args.min_budget, max_budget=args.max_budget,
-#                   eta = args.eta,
-#                   result_logger=result_logger,
-#                   min_points_in_model=10,
-#                   num_samples=10,
-#                   random_fraction=0.1,
-#                   top_n_percent=15,
-#                   load_config=inc_config,
-#                   load_model=model)
-#     res = bohb.run(n_iterations=args.n_iterations )
-#     bohb.shutdown(shutdown_workers=True)
-#     NS.shutdown()
-#     # Waiting for all workers and services to shutdown
-#     time.sleep(2)
+
+    print('===' * 40)
+    print('~+~' * 40)
+    print("Generating plots for BOHB run")
+    print('~+~' * 40)
+    try:
+        generateLossComparison(args.out_dir, show = args.show_plots)
+        generateViz(args.out_dir, show = args.show_plots)
+    except:
+        print("Issue with plot generation! Not all plots may have been generated.")
+    print('~+~' * 40)
