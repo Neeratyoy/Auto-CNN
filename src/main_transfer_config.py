@@ -197,7 +197,7 @@ def train(dataset,
     #         else:
     #             break
 
-    print(model.layers)
+    # print(model.layers)
 
     total_model_params = np.sum(p.numel() for p in model.parameters())
 

@@ -58,7 +58,7 @@ if __name__ == "__main__":
         model_optimizer=opti_dict[config['model_optimizer']],
         opti_aux_param=opti_aux_param,
         data_augmentations=None,  # Not set in this example
-        save_model_str='bohb/transfer_learn/KMNIST2K49/',
+        save_model_str=None,
         test=True
     )
     print('\n'*5)

@@ -112,7 +112,7 @@ class TransferWorker(Worker):
             channel_1 = CSH.UniformIntegerHyperparameter('channel_1', lower=reference_config['channel_1'], upper=24, default_value=reference_config['channel_1'])
             config_space.add_hyperparameter(channel_1)
         if n_layers >= 2:
-            channel_2 = CSH.CategoricalHyperparameter('channel_2', choices=['1', '2', '3', '4'], default_value='2')
+            channel_2 = CSH.UniformIntegerHyperparameter('channel_2', lower=1, upper=4, default_value=2)
             config_space.add_hyperparameter(channel_2)
         if n_layers == 3:
             if reference_config['kernel_3'] == '1':
@@ -128,7 +128,7 @@ def save_config(source, dest, name):
     id2conf = result.get_id2config_mapping()
     inc_id = result.get_incumbent_id()
     inc_config = id2conf[inc_id]['config']
-    f = open(source+name+'.json', 'w')
+    f = open(dest+name+'.json', 'w')
     f.write(json.dumps(inc_config))
     f.close()
 
@@ -154,6 +154,9 @@ if __name__ == "__main__":
     inc_id = result.get_incumbent_id()
     inc_config = id2conf[inc_id]['config']
     save_config(args.config_dir, args.out_dir, 'parent')
+    print("Saving")
+    import time
+    time.sleep(10)
 
     # print(args)
     # print(kwargs)

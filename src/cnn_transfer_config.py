@@ -138,7 +138,7 @@ class ConfigurableNet(nn.Module):
                     b = nn.BatchNorm1d(output_count)
                     lay.append(b)
                 # determine activation function
-                activation = config['activation']
+                activation = old_config['activation']
                 # activation = 'tanh'
                 if activation == 'relu':
                     act = nn.ReLU()

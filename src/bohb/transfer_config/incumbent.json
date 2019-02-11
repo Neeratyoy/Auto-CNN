@@ -1,1 +1,0 @@
-{"batch_size": "100", "batchnorm": "True", "channel_1": 13, "channel_2": "1", "channel_3": "2", "dropout": "False", "n_fc_layer": 1}

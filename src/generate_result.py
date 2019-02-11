@@ -3,14 +3,28 @@ import hpbandster.core.result as hpres
 from main import train
 import torch
 import logging
+import json
 
 logging.basicConfig(level=logging.INFO)
+
+def unified_config(parent, config):
+    parent['batch_size'] = config['batch_size']
+    parent['n_fc_layer'] = config['n_fc_layer']
+    for i in range(parent['n_conv_layer']):
+        parent['channel_'+str(i+1)] = config['channel_'+str(i+1)]
+    for i in range(2):
+        del(parent['fc_'+str(i+1)])
+    for i in range(parent['n_fc_layer']-1):
+        parent['fc_'+str(i+1)] = 500
+    return parent
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--config_dir", dest="config_dir", type=str)
     parser.add_argument("--dataset", dest="dataset", type=str, default='KMNIST')
     parser.add_argument("--epochs", dest="epochs", type=int, default=1)
+    parser.add_argument("--transfer", dest="transfer", type=bool, default=False)
     args, kwargs = parser.parse_known_args()
 
     result = hpres.logged_results_to_HBS_result(args.config_dir)
@@ -18,6 +32,10 @@ if __name__ == '__main__':
     inc_id = result.get_incumbent_id()
     inc_config = id2conf[inc_id]['config']
     info = result.get_runs_by_id(inc_id)[-1]['info']
+
+    if args.transfer:
+        parent_config = json.load(open(args.config_dir+'parent.json'))
+        inc_config = unified_config(parent_config, inc_config)
 
     print("Best configuration: ", inc_config)
     print()
