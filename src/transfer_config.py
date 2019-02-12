@@ -50,7 +50,7 @@ class TransferWorker(Worker):
         num_epochs = int(budget)
         batch_size = int(config['batch_size']) #50
         learning_rate = old_config['learning_rate']
-        training_loss = loss_dict[old_config['training_criterion']]
+        training_loss = torch.nn.CrossEntropyLoss # loss_dict[old_config['training_criterion']]
         # if config['training_criterion'] == 'MSELoss':
         #         training_loss = torch.nn.MSELossid2conf = result.get_id2config_mapping()
         # else:
@@ -95,7 +95,8 @@ class TransferWorker(Worker):
     @staticmethod
     def get_configspace(reference_config):
         config_space = CS.ConfigurationSpace()
-        batch = CSH.CategoricalHyperparameter('batch_size', choices=['100', '200', '500', '1000'], default_value='100')
+        # batch = CSH.CategoricalHyperparameter('batch_size', choices=['100', '200', '500', '1000'], default_value='100')
+        batch = CSH.UniformIntegerHyperparameter('batch_size', lower=100, upper=1000, default_value=100, log=True)
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
 
@@ -112,13 +113,15 @@ class TransferWorker(Worker):
             channel_1 = CSH.UniformIntegerHyperparameter('channel_1', lower=reference_config['channel_1'], upper=24, default_value=reference_config['channel_1'])
             config_space.add_hyperparameter(channel_1)
         if n_layers >= 2:
-            channel_2 = CSH.UniformIntegerHyperparameter('channel_2', lower=1, upper=4, default_value=2)
+            channel_2 = CSH.UniformIntegerHyperparameter('channel_2', lower=2, upper=4, default_value=2)
             config_space.add_hyperparameter(channel_2)
         if n_layers == 3:
             if reference_config['kernel_3'] == '1':
-                channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5'], default_value='0.5')
+                # channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5'], default_value='0.5')
+                channel_3 = CSH.UniformFloatHyperparameter('channel_3', lower=0.5, upper=1, default_value=0.5)
             else:
-                channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5', '1', '2', '3'], default_value='2')
+                channel_3 = CSH.UniformFloatHyperparameter('channel_3', lower=0.5, upper=3, default_value=2)
+                # channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5', '1', '2', '3'], default_value='2')
             config_space.add_hyperparameter(channel_3)
 
         return(config_space)

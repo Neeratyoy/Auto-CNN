@@ -44,7 +44,7 @@ class MyWorker(Worker):
         num_epochs = int(budget)
         batch_size = int(config['batch_size']) #50
         learning_rate = config['learning_rate']
-        training_loss = loss_dict[config['training_criterion']]
+        training_loss = torch.nn.CrossEntropyLoss # loss_dict[config['training_criterion']]
         # if config['training_criterion'] == 'MSELoss':
         #         training_loss = torch.nn.MSELossid2conf = result.get_id2config_mapping()
         # else:
@@ -131,12 +131,12 @@ class MyWorker(Worker):
         ########################
         # TRAINING HYPERPARAMS #
         ########################
-        loss = CSH.CategoricalHyperparameter('training_criterion', choices=['cross_entropy'], default_value='cross_entropy') # choices=['mse', 'cross_entropy']
+        # loss = CSH.CategoricalHyperparameter('training_criterion', choices=['cross_entropy'], default_value='cross_entropy') # choices=['mse', 'cross_entropy']
         # batch = CSH.UniformIntegerHyperparameter('batch_size', lower=32, upper=1024, default_value=128)
         batch = CSH.CategoricalHyperparameter('batch_size', choices=['50', '100', '200', '500', '1000'], default_value='100')
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
-        config_space.add_hyperparameters([loss, batch])
+        config_space.add_hyperparameters([batch])
 
         ############################
         # ARCHITECTURE HYPERPARAMS #
@@ -426,8 +426,6 @@ if __name__ == "__main__":
                   min_budget=args.min_budget, max_budget=args.max_budget,
                   eta = args.eta,
                   result_logger=result_logger,
-                  min_points_in_model=10,
-                  num_samples=10,
                   random_fraction=0.1,
                   top_n_percent=15)
     res = bohb.run(n_iterations=args.n_iterations )
