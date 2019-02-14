@@ -4,18 +4,19 @@ from main import train
 import torch
 import logging
 import json
+import time
 
 logging.basicConfig(level=logging.INFO)
 
 def unified_config(parent, config):
     parent['batch_size'] = config['batch_size']
-    parent['n_fc_layer'] = config['n_fc_layer']
     for i in range(parent['n_conv_layer']):
         parent['channel_'+str(i+1)] = config['channel_'+str(i+1)]
-    for i in range(2):
-        del(parent['fc_'+str(i+1)])
     for i in range(parent['n_fc_layer']-1):
-        parent['fc_'+str(i+1)] = 500
+        del(parent['fc_'+str(i+1)])
+    parent['n_fc_layer'] = config['n_fc_layer']
+    for i in range(config['n_fc_layer']-1):
+        parent['fc_'+str(i+1)] = config['fc_nodes']  #500
     return parent
 
 
@@ -56,6 +57,8 @@ if __name__ == '__main__':
         opti_aux_param = None
     opti_dict = {'adam': torch.optim.Adam, 'adad': torch.optim.Adadelta,
                 'sgd': torch.optim.SGD}
+
+    start = time.time()
     train_score, _, test_score, _, _, _, _, model = train(
         dataset=args.dataset,  # dataset to use
         model_config=inc_config,
@@ -70,7 +73,7 @@ if __name__ == '__main__':
         save_model_str=None,
         test=True
     )
-
+    print("Time take to train and evalaute: ", time.time() - start)
     print('~+~'*40)
     print("Training Accuracy: ", train_score)
     print("Test Accuracy: ", test_score)

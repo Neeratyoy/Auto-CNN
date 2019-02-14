@@ -1,0 +1,4 @@
+[[0, 0, 0], {"batch_size": 811, "channel_1": 22, "channel_2": 3, "n_fc_layer": 3, "fc_nodes": 53}, {"model_based_pick": false}]
+[[0, 0, 1], {"batch_size": 148, "channel_1": 11, "channel_2": 4, "n_fc_layer": 1}, {"model_based_pick": false}]
+[[0, 0, 2], {"batch_size": 724, "channel_1": 20, "channel_2": 2, "n_fc_layer": 3, "fc_nodes": 207}, {"model_based_pick": false}]
+[[0, 0, 3], {"batch_size": 195, "channel_1": 16, "channel_2": 2, "n_fc_layer": 1}, {"model_based_pick": false}]

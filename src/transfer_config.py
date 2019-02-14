@@ -104,9 +104,10 @@ class TransferWorker(Worker):
         # ARCHITECTURE HYPERPARAMS #
         ############################
         n_fc_layer = CSH.UniformIntegerHyperparameter('n_fc_layer', lower=1, upper=3, default_value=1, log=False)
+        fc_nodes = CSH.UniformIntegerHyperparameter('fc_nodes', lower=50, upper=784, default_value=500, log=True)
         # dropout = CSH.CategoricalHyperparameter('dropout', choices=['True', 'False'], default_value='False')
         # batchnorm = CSH.CategoricalHyperparameter('batchnorm', choices=['True', 'False'], default_value='False')
-        config_space.add_hyperparameters([n_fc_layer, batch])
+        config_space.add_hyperparameters([n_fc_layer, batch, fc_nodes])
 
         n_layers = reference_config['n_conv_layer']
         if n_layers >= 1:
@@ -120,9 +121,12 @@ class TransferWorker(Worker):
                 # channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5'], default_value='0.5')
                 channel_3 = CSH.UniformFloatHyperparameter('channel_3', lower=0.5, upper=1, default_value=0.5)
             else:
-                channel_3 = CSH.UniformFloatHyperparameter('channel_3', lower=0.5, upper=3, default_value=2)
+                channel_3 = CSH.UniformIntegerHyperparameter('channel_3', lower=1, upper=3, default_value=2)
                 # channel_3 = CSH.CategoricalHyperparameter('channel_3', choices=['0.5', '1', '2', '3'], default_value='2')
             config_space.add_hyperparameter(channel_3)
+
+        fc_cond = CS.InCondition(fc_nodes, n_fc_layer, [2,3])
+        config_space.add_condition(fc_cond)
 
         return(config_space)
 

@@ -131,7 +131,7 @@ class ConfigurableNet(nn.Module):
                     channels = height * width * channels
                     n_convs -= 1
                     #           in_channels, out_channels
-                output_count = 500 #new_config['fc_'+str(layer+1-config['n_conv_layer'])]
+                output_count = new_config['fc_nodes']  # 500 
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
                 if batchnorm:

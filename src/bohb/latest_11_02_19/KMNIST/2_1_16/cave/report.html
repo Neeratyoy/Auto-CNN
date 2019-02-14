@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
+<title>CAVE</title>
+<link href="html/css/accordion.css" rel="stylesheet" />
+<link href="html/css/table.css" rel="stylesheet" />
+<link href="html/css/lightbox.min.css" rel="stylesheet" />
+<link href="html/css/help-tip.css" rel="stylesheet" />
+<link href="html/css/global.css" rel="stylesheet" />
+<link href="html/css/back-to-top.css" rel="stylesheet" />
+<link href="html/css/tabs.css" rel="stylesheet" />
+
+<link href="html/css/bokeh-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-1.0.1.min.css" rel="stylesheet" type="text/css">
+
+<script src="html/js/tabs.js"></script>
+
+<script src="html/js/bokeh-1.0.1.min.js"></script>
+<script src="html/js/bokeh-widgets-1.0.1.min.js"></script>
+<script src="html/js/bokeh-tables-1.0.1.min.js"></script>
+
+<!--Below here are the includes of scripts for the report (e.g. bokeh)-->
+<script src="content/js/BOHBLearningCurves__13_script.js"></script>
+<script src="content/js/BudgetCorrelation__14_script.js"></script>
+<script src="content/js/Interactive__15_script.js"></script>
+<script src="content/js/CostOverTime__16_script.js"></script>
+
+<!--Above here are the includes of scripts for the report (e.g. bokeh)-->
+
+</head>
+<body>
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
+<script src="html/js/lightbox-plus-jquery.min.js"></script>
+<header>
+    <div class='l-wrapper'>
+        <img class='logo logo--configurator' src="html/images/BOHB_logo.png" />
+        <img class='logo logo--ml' src="html/images/automl-logo.png" />
+    </div>
+</header>
+<div class='l-wrapper'>
+<h1>CAVE</h1>
+<div class="accordion">Meta Data <div class="help-tip"><p>Meta data, i.e. number of instances and parameters as well as configuration budget. Statistics apply to the best run, if multiple configurator runs are compared.</p></div></div>
+<div class="panel">
+<div class="accordion">General <div class="help-tip"><p>General information about the optimization scenario.</p></div></div>
+<div class="panel">
+<div style="overflow-x: auto" align="center">
+<table border="1" class="dataframe">
+  <tbody>
+    <tr>
+      <th># aggregated parallel BOHB runs</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th># parameters</th>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>Deterministic target algorithm</th>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>Optimized run objective</th>
+      <td>quality</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div><div class="accordion">Run-Specific <div class="help-tip"><p>Information to specific runs (if there are multiple runs). Interesting for parallel optimizations or usage of budgets/fidelities.</p></div></div>
+<div class="panel">
+<div style="overflow-x: auto" align="center">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th></th>
+      <th>budget_1.0</th>
+      <th>budget_2.0</th>
+      <th>budget_4.0</th>
+      <th>budget_8.0</th>
+      <th>budget_16.0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Total time spent evaluating configurations</th>
+      <td>659.59 sec</td>
+      <td>1339.48 sec</td>
+      <td>1580.05 sec</td>
+      <td>2705.35 sec</td>
+      <td>5342.26 sec</td>
+    </tr>
+    <tr>
+      <th>Average time per configuration (mean / std)</th>
+      <td>20.61 sec (± 15.79)</td>
+      <td>41.86 sec (± 31.17)</td>
+      <td>65.84 sec (± 62.83)</td>
+      <td>135.27 sec (± 106.59)</td>
+      <td>267.11 sec (± 221.80)</td>
+    </tr>
+    <tr>
+      <th># evaluated configurations</th>
+      <td>32</td>
+      <td>32</td>
+      <td>24</td>
+      <td>20</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th># changed parameters (default to incumbent)</th>
+      <td>13</td>
+      <td>14</td>
+      <td>13</td>
+      <td>14</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>Configuration origins</th>
+      <td>Random : 32</td>
+      <td>Random : 32</td>
+      <td>Random : 24</td>
+      <td>Random : 20</td>
+      <td>Random : 20</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div></div><div class="accordion">Incumbents Over Budgets <div class="help-tip"><p>Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that budget).</p></div></div>
+<div class="panel">
+<div style="overflow-x: auto" align="center">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>budget_1.0</th>
+      <th>budget_2.0</th>
+      <th>budget_4.0</th>
+      <th>budget_8.0</th>
+      <th>budget_16.0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>activation</th>
+      <td>tanh</td>
+      <td>tanh</td>
+      <td>tanh</td>
+      <td>tanh</td>
+      <td>relu</td>
+    </tr>
+    <tr>
+      <th>batch_size</th>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>100</td>
+    </tr>
+    <tr>
+      <th>batchnorm</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>channel_1</th>
+      <td>9</td>
+      <td>4</td>
+      <td>9</td>
+      <td>4</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>dropout</th>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>kernel_1</th>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>learning_rate</th>
+      <td>0.00129257</td>
+      <td>0.00166625</td>
+      <td>0.00129257</td>
+      <td>0.00166625</td>
+      <td>0.000769813</td>
+    </tr>
+    <tr>
+      <th>model_optimizer</th>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+    </tr>
+    <tr>
+      <th>n_conv_layer</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>n_fc_layer</th>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>padding_1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>stride_1</th>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>amsgrad</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>fc_1</th>
+      <td>464</td>
+      <td>545</td>
+      <td>464</td>
+      <td>545</td>
+      <td>502</td>
+    </tr>
+    <tr>
+      <th>maxpool_1</th>
+      <td>False</td>
+      <td>inactive</td>
+      <td>False</td>
+      <td>inactive</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>Cost</th>
+      <td>0.28</td>
+      <td>0.179</td>
+      <td>0.142</td>
+      <td>0.114</td>
+      <td>0.067</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div><div class="accordion">BOHB Learning Curves <div class="help-tip"><p>Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.</p></div></div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="1c0683ea-819e-4b2b-bd05-422aa70827b1"></div>
+</div>
+</div><div class="accordion">Budget Correlation </div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="7cde0693-e695-45c8-9293-8d7460098ce5"></div>
+</div>
+</div><div class="accordion">Configurators Behavior </div>
+<div class="panel">
+<div class="accordion">Configurator Footprint <div class="help-tip"><p>Analysis of the iteratively sampled configurations during the optimization procedure.  Multi-dimensional scaling (MDS) is used to reduce dimensionality of the search space and plot the distribution of evaluated configurations. The larger the dot, the more often the configuration was evaluated on instances from the set. Configurations that were incumbents at least once during optimization are marked as red squares.  Configurations acquired through local search are marked with a 'x'.  The downward triangle denotes the final incumbent, whereas the orange upward triangle denotes the default configuration.  The heatmap and the colorbar correspond to the predicted performance in that part of the search space.  </p></div></div>
+<div class="panel">
+<div class="accordion">Interactive </div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="5827f6ff-77d4-4d17-b75c-29aac5aeb9d5"></div>
+</div>
+</div><div class="accordion">Static </div>
+<div class="panel">
+<div align="center">
+<a href="cfp_over_time/configurator_footprint0.png" data-lightbox="['bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint0.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint1.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint2.png']" data-title="cfp_over_time/configurator_footprint0.png"><img src="cfp_over_time/configurator_footprint0.png" alt="Plot missing - is phantomjs installed? Check CAVEs FAQ for infos." style="float: left; width: 32%; margin-right: 1%; margin-bottom: 0.5em;"></a>
+<a href="cfp_over_time/configurator_footprint1.png" data-lightbox="['bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint0.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint1.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint2.png']" data-title="cfp_over_time/configurator_footprint1.png"><img src="cfp_over_time/configurator_footprint1.png" alt="Plot missing - is phantomjs installed? Check CAVEs FAQ for infos." style="float: left; width: 32%; margin-right: 1%; margin-bottom: 0.5em;"></a>
+<a href="cfp_over_time/configurator_footprint2.png" data-lightbox="['bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint0.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint1.png', 'bohb/latest_11_02_19/KMNIST/2_1_16/cave/cfp_over_time/configurator_footprint2.png']" data-title="cfp_over_time/configurator_footprint2.png"><img src="cfp_over_time/configurator_footprint2.png" alt="Plot missing - is phantomjs installed? Check CAVEs FAQ for infos." style="float: left; width: 32%; margin-right: 1%; margin-bottom: 0.5em;"></a>
+<p style="clear: both;"></div>
+</div></div><div class="accordion">Cost Over Time <div class="help-tip"><p>Depicts the average cost of the best so far found configuration (using all trajectory data) over the time spent by the configurator (including target algorithm runs and the overhead generated by the configurator) If the curve flattens out early, it indicates that too much time was spent for the configurator run; whereas a curve that is still improving at the end of the budget indicates that one should increase the configuration budget. The plotted standard deviation gives the uncertainty over multiple configurator runs.</p></div></div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="108a1978-eb98-4e65-a30b-789961efc38e"></div>
+</div>
+</div></div>
+</div>
+<footer>
+    <div class='l-wrapper'>
+        Generated by <a href="https://github.com/automl/CAVE">CAVE v1.1.5.dev</a> and developed by
+        <a href="http://www.automl.org">autoML</a> | Optimized for Chrome and Firefox
+    </div>
+</footer>
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+for (i = 0; i < acc.length; i++) {
+    acc[i].onclick = function(){
+        this.classList.toggle("active");
+        this.nextElementSibling.classList.toggle("show");
+  }
+}
+</script>
+<script src="html/js/back-to-top.js"></script>
+</body>
+</html>
