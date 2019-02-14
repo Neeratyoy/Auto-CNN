@@ -154,7 +154,7 @@ if __name__ == "__main__":
     parser.add_argument("--show_plots", dest="show_plots", type=bool, default=False)
     args, kwargs = parser.parse_known_args()
 
-    # logging.basicConfig(filename=args.out_dir+'info.log',level=logging.INFO)
+    start_time = time.time()
 
     result = hpres.logged_results_to_HBS_result(args.config_dir)
     id2conf = result.get_id2config_mapping()
@@ -186,6 +186,7 @@ if __name__ == "__main__":
     bohb.shutdown(shutdown_workers=True)
     NS.shutdown()
     # Waiting for all workers and services to shutdown
+    end_time = time.time()
     time.sleep(2)
     # Saving parent config - IMPORTANT for final numbers
     save_config(args.config_dir, args.out_dir, 'parent')
@@ -199,6 +200,7 @@ if __name__ == "__main__":
     print('Total budget corresponds to %.1f full function evaluations.'%(sum([r.budget for r in res.get_all_runs()])/20))
     print('===' * 40)
     print('Best found configuration:', id2config[incumbent]['config'])
+    print(id2config[incumbent]['info'])
     save_config(args.out_dir, args.out_dir, 'best')
 
     print('===' * 40)
@@ -211,3 +213,5 @@ if __name__ == "__main__":
     except:
         print("Issue with plot generation! Not all plots may have been generated.")
     print('~+~' * 40)
+
+    print("Time taken for BOHB: ", end_time - start_time)

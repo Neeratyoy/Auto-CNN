@@ -1,3 +1,63 @@
+
+
+INCLUDE HARDWARE DETAILS
+TIME EVERYTHING
+
+
+--------------
+| BASIC BOHB |
+--------------
+
+Config: bohb/KMNIST/2_2_20
+Trained: KMNIST
+(Train-Valid) 97.14%    95.89%
+(Train-Test)  97.93%    91.76%
+
+
+Config: bohb/KMNIST/2_5_20
+Trained: KMNIST
+(Train-Valid) 97.14%    95.54%
+(Train-Test)  96.39%    88.37%
+
+
+Config: bohb/KMNIST/4_5_15
+Trained: KMNIST
+(Train-Valid) 93.67%    92.57%
+(Train-Test)  98.55%    92.11%
+
+
+Config: bohb/KMNIST/4_2_20
+Trained: KMNIST
+(Train-Valid) 97.87%    95.68%
+(Train-Test)  97.59%    90.33%
+
+
+Config: bohb/latest_11_02_19/KMNIST/2_1_16
+Trained: KMNIST
+(Train-Valid) 99.96%    98.50%
+(Train-Test)  99.97%    95.35%
+
+
+Config: bohb/latest_11_02_19/KMNIST/3_1_9
+Trained: KMNIST
+(Train-Valid) 97.45%    96.33% [9 epochs]
+(Train-Test)  97.61%    91.35% [9 epochs]
+			  98.78%    93.73% [20 epochs]
+
+
+
+Config: bohb/latest_11_02_19/K49/2_1_16
+Trained: K49
+(Train-Valid) 97.72%    92.06% [16 Epochs (max budget)]
+(Train-Test)  97.78%    89.05% [20 Epochs]
+			  96.96%    88.32% [10 Epochs]
+			  96.53%    88.37% [8 Epochs]
+
+
+------------------
+| TRANSFER LEARN |
+------------------
+
 Config: bohb/K49/2_2_20/
 Trained: KMNIST
 98.445%    92.221%
@@ -5,6 +65,68 @@ Transfered to: K49
 95.567%    87.191%
 
 
-Config: bohb/KMNIST/2_2_20
+Config: bohb/KMNIST/2_2_20/
 Trained: KMNIST
-97.93%    91.76%
+98.14%    91.8%
+Transfered to: K49
+91.64%    84.1%
+
+
+Config: bohb/latest_11_02_19/K49/2_1_16
+Trained: K49
+98.05%    88.94% [20 Epochs]
+Transfered to: KMNIST
+99.84%    92.33% [20 Epochs]
+
+
+Config: bohb/latest_11_02_19/KMNIST/2_1_16
+Trained: KMNIST
+99.97%    95.29% [20 Epochs]
+Transferred to: K49
+99.18%    92.85% [20 Epochs]
+
+
+Config: bohb/latest_11_02_19/KMNIST/3_1_9
+Trained: KMNIST
+98.83%    93.78% [20 Epochs]
+Transferred to: K49
+95.59%    89.93%
+
+
+
+--------------------------
+| TRANSFER CONFIG (BOHB) |
+--------------------------
+
+Config: bohb/latest_11_02_19/KMNIST/2_1_16
+Trained: K49
+New Config: bohb/transfer_config/KMNIST_2_1_16_K49_3_1_9/
+(Train-Valid) 99.10%    95.57% [9 Epochs (max budget)]
+(Train-Test)  99.71%    93.32% [20 Epochs]
+
+
+Config: bohb/latest_11_02_19/KMNIST/2_1_16
+Trained: K49
+New Config: bohb/transfer_config/KMNIST_2_1_16_K49_4_1_16/
+(Train-Valid) 99.08%    95.84% [16 Epochs (max budget)]
+(Train-Test)  99.29%    93.39% [20 Epochs]
+
+
+Config: bohb/latest_11_02_19/KMNIST/3_1_9
+Trained: K49
+New Config: bohb/transfer_config/KMNIST_3_1_9_K49_3_1_9/ [3 iterations]
+(Train-Valid) 96.12%    93.51% [9 Epochs (max budget)]
+(Train-Test)  98.52%    91.88% [20 Epochs]
+
+
+
+-----------
+| CLUSTER |
+-----------
+
+Config: cluster/conda/kmnist/2_2_20
+Trained: KMNIST
+(Train-Valid) 96.00%    91.45%
+(Train-Test)  99.82%    88.77%
+Tested: K49
+(Train-Test)  94.95%    84.41%

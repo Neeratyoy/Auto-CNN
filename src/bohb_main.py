@@ -408,8 +408,8 @@ if __name__ == "__main__":
     parser.add_argument("--show_plots", dest="show_plots", type=bool, default=False)
     args, kwargs = parser.parse_known_args()
 
-    # print(args)
-    # print(kwargs)
+    start_time = time.time()
+
     global dataset
     dataset = args.dataset # Find way to pass to BOHB call sans config
 
@@ -432,6 +432,7 @@ if __name__ == "__main__":
     bohb.shutdown(shutdown_workers=True)
     NS.shutdown()
     # Waiting for all workers and services to shutdown
+    end_time = time.time()
     time.sleep(2)
 
     # Extracting results
@@ -470,3 +471,6 @@ if __name__ == "__main__":
     # print("Test Accuracy: ", res['info']['test_score'])
     print("Training Loss: ", res['info']['train_loss'])
     print("Test Loss: ", res['info']['test_score'])
+
+    print('~+~'*40)
+    print("Time taken for BOHB: ", end_time - start_time)
