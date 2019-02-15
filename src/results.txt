@@ -1,9 +1,4 @@
 
-
-INCLUDE HARDWARE DETAILS
-TIME EVERYTHING
-
-
 --------------
 | BASIC BOHB |
 --------------

@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", dest="epochs", type=int, default=1)
     args, kwargs = parser.parse_known_args()
 
-    logging.basicConfig(filename='temp.log', level='INFO')
+    start_time = time.time()
 
     print('~+~'*40)
     print("TRAINING PARENT MODEL ON ", args.dataset_source)
@@ -63,6 +63,9 @@ if __name__ == "__main__":
     )
     print('\n'*5)
 
+    print("Checkpoint 1: ", time.time() - start_time)
+    start_time = time.time()
+
     print('~+~'*40)
     print("TRANSFERING MODEL TO ", args.dataset_dest)
     print('~+~'*40)
@@ -88,3 +91,6 @@ if __name__ == "__main__":
 
     print(train_score_1, test_score_1)
     print(train_score_2, test_score_2)
+    print('~+~'*40)
+    print("Checkpoint 2: ", time.time() - start_time)
+    start_time = time.time()
