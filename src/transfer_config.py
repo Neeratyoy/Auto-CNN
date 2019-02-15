@@ -179,9 +179,8 @@ if __name__ == "__main__":
                   min_budget=args.min_budget, max_budget=args.max_budget,
                   eta = args.eta,
                   result_logger=result_logger,
-                  # min_points_in_model=7,
                   random_fraction=0.1,
-                  top_n_percent=15)
+                  num_samples=4)
     res = bohb.run(n_iterations=args.n_iterations )
     bohb.shutdown(shutdown_workers=True)
     NS.shutdown()

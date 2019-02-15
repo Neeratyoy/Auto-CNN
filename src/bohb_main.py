@@ -231,7 +231,7 @@ class MyWorker(Worker):
         maxpool_cond_3 = CS.NotEqualsCondition(maxpool_3, stride_3, 2)   # Convolution with stride 2 is equivalent to Maxpool
         maxpool_kernel_cond_3 = CS.EqualsCondition(maxpool_kernel_3, maxpool_3, 'True')
         # LAYER 3 - RESTRICTING PADDING RANGE
-        # Ensuring a padding domain of {0, 1, ..., floor(n/2)} for kernel_size n
+        # Ensuring a padding domain of {0, 1, ..., floor(n/2)} for kernel_size n'activation': 'tanh', 'batch_size': '100', 'batchnorm': 'False', 'channel_1': 12, 'dropout': 'False', 'kernel_1': '7', 'learning_rate': 1.800472708316064e-05, 'model_optimizer': 'sgd', 'n_conv_layer': 3, 'n_fc_layer': 1, 'padding_1': 1, 'stride_1': 1, 'channel_2': '2', 'channel_3': '2', 'kernel_2': '3', 'kernel_3': '3', 'maxpool_1': 'True', 'momentum': 0.03883795397698147, 'padding_2': 0, 'padding_3': 0, 'stride_2': 2, 'stride_3': 1, 'maxpool_3': 'False', 'maxpool_kernel_1': 6}
         padding_3_cond_0 = CS.ForbiddenAndConjunction(
                 CS.ForbiddenEqualsClause(kernel_3, '3'),
                 CS.ForbiddenInClause(padding_3, [2,3])
@@ -281,13 +281,25 @@ class MyWorker(Worker):
                 CS.ForbiddenEqualsClause(maxpool_1, 'True'),
                 CS.ForbiddenInClause(kernel_2, ['5', '7'])
         )
-        for_three_layers_1 = CS.ForbiddenAndConjunction(
+        for_three_layers_1_0 = CS.ForbiddenAndConjunction(
                 # Constraining maxpool kernel sizes for a 3 layer convolution
                 # Small maxpool kernel if subsequent layer contains another maxpool
                 CS.ForbiddenEqualsClause(n_conv_layer, 3),
-                CS.ForbiddenInClause(maxpool_kernel_1, [3,4,5,6]),
-                CS.ForbiddenInClause(maxpool_kernel_2, [3,4,5,6]),
-                CS.ForbiddenInClause(maxpool_kernel_3, [3,4,5,6]),
+                CS.ForbiddenInClause(maxpool_kernel_1, [5,6])
+                # CS.ForbiddenEqualsClause(maxpool_2, 'True')
+        )
+        for_three_layers_1_1 = CS.ForbiddenAndConjunction(
+                # Constraining maxpool kernel sizes for a 3 layer convolution
+                # Small maxpool kernel if subsequent layer contains another maxpool
+                CS.ForbiddenEqualsClause(n_conv_layer, 3),
+                CS.ForbiddenInClause(maxpool_kernel_2, [4,5,6])
+                # CS.ForbiddenEqualsClause(maxpool_2, 'True')
+        )
+        for_three_layers_1_2 = CS.ForbiddenAndConjunction(
+                # Constraining maxpool kernel sizes for a 3 layer convolution
+                # Small maxpool kernel if subsequent layer contains another maxpool
+                CS.ForbiddenEqualsClause(n_conv_layer, 3),
+                CS.ForbiddenInClause(maxpool_kernel_3, [3, 4,5,6])
                 # CS.ForbiddenEqualsClause(maxpool_2, 'True')
         )
         for_three_layers_2 = CS.ForbiddenAndConjunction(
@@ -357,7 +369,8 @@ class MyWorker(Worker):
                 CS.ForbiddenInClause(kernel_3, ['5', '7'])
         )
         config_space.add_forbidden_clauses([for_two_layers_1, for_two_layers_2, for_two_layers_2,
-                                            for_three_layers_1, for_three_layers_2, for_three_layers_3,
+                                            for_three_layers_1_0, for_three_layers_1_1, for_three_layers_1_2,
+                                            for_three_layers_2, for_three_layers_3,
                                             for_three_layers_4, for_three_layers_5, for_three_layers_6,
                                             for_three_layers_7, for_three_layers_8, for_three_layers_9,
                                             for_three_layers_10, for_three_layers_11])
@@ -427,7 +440,7 @@ if __name__ == "__main__":
                   eta = args.eta,
                   result_logger=result_logger,
                   random_fraction=0.1,
-                  top_n_percent=15)
+                  num_samples=4)
     res = bohb.run(n_iterations=args.n_iterations )
     bohb.shutdown(shutdown_workers=True)
     NS.shutdown()
