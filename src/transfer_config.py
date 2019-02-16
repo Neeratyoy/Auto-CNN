@@ -111,10 +111,10 @@ class TransferWorker(Worker):
 
         n_layers = reference_config['n_conv_layer']
         if n_layers >= 1:
-            channel_1 = CSH.UniformIntegerHyperparameter('channel_1', lower=reference_config['channel_1'], upper=24, default_value=reference_config['channel_1'])
+            channel_1 = CSH.UniformIntegerHyperparameter('channel_1', lower=reference_config['channel_1'], upper=20, default_value=reference_config['channel_1'])
             config_space.add_hyperparameter(channel_1)
         if n_layers >= 2:
-            channel_2 = CSH.UniformIntegerHyperparameter('channel_2', lower=2, upper=4, default_value=2)
+            channel_2 = CSH.UniformIntegerHyperparameter('channel_2', lower=1, upper=4, default_value=2)
             config_space.add_hyperparameter(channel_2)
         if n_layers == 3:
             if reference_config['kernel_3'] == '1':

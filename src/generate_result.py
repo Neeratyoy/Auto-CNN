@@ -1,10 +1,12 @@
 import argparse
 import hpbandster.core.result as hpres
 from main import train
+from main import train_test
 import torch
 import logging
 import json
 import time
+from matplotlib import pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,6 +20,18 @@ def unified_config(parent, config):
     for i in range(config['n_fc_layer']-1):
         parent['fc_'+str(i+1)] = config['fc_nodes']  #500
     return parent
+
+def plot_learning_curve(train, test, out_dir):
+    plt.plot(range(1, len(train)+1), train, color='red', label='Training Loss')
+    plt.plot(range(1, len(test)+1), test, color='green', label='Test Set Loss')
+    plt.title('Learning Curve')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.xticks(range(1, len(train)+1))
+    plt.xlim(1,len(train))
+    plt.legend()
+    plt.grid(which='major', linestyle=':', axis='y')
+    plt.savefig(out_dir+'learning_curve.png')
 
 
 if __name__ == '__main__':
@@ -59,7 +73,21 @@ if __name__ == '__main__':
                 'sgd': torch.optim.SGD}
 
     start = time.time()
-    train_score, _, test_score, _, _, _, _, model = train(
+    # train_score, _, test_score, _, _, _, _, model = train(
+    #     dataset=args.dataset,  # dataset to use
+    #     model_config=inc_config,
+    #     data_dir='../data',
+    #     num_epochs=args.epochs,
+    #     batch_size=int(inc_config['batch_size']),
+    #     learning_rate=inc_config['learning_rate'],
+    #     train_criterion=torch.nn.CrossEntropyLoss,
+    #     model_optimizer=opti_dict[inc_config['model_optimizer']],
+    #     opti_aux_param=opti_aux_param,
+    #     data_augmentations=None,  # Not set in this example
+    #     save_model_str=None,
+    #     test=True
+    # )
+    train_score, _, test_score, _, _, _, _, model, train, test = train_test(
         dataset=args.dataset,  # dataset to use
         model_config=inc_config,
         data_dir='../data',
@@ -70,9 +98,10 @@ if __name__ == '__main__':
         model_optimizer=opti_dict[inc_config['model_optimizer']],
         opti_aux_param=opti_aux_param,
         data_augmentations=None,  # Not set in this example
-        save_model_str=None,
-        test=True
+        save_model_str=None
+        # test=True
     )
+    plot_learning_curve(train, test, args.config_dir)
     print("Time take to train and evalaute: ", time.time() - start)
     print('~+~'*40)
     print("Training Accuracy: ", train_score)

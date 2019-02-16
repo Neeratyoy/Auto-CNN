@@ -199,8 +199,142 @@ def train(dataset,
         torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
     return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model
+#########################################################################################################################
 
 
+def train_test(dataset,
+          model_config,
+          data_dir,
+          num_epochs=10,
+          batch_size=50,
+          learning_rate=0.001,
+          train_criterion=torch.nn.CrossEntropyLoss,
+          model_optimizer=torch.optim.Adam,
+          opti_aux_param=False,
+          data_augmentations=None,
+          save_model_str=None):
+          # test=False):
+    """
+    Training loop for configurableNet.
+    :param dataset: which dataset to load (str)
+    :param model_config: configurableNet config (dict)
+    :param num_epochs: (int)
+    :param batch_size: (int)
+    :param learning_rate: model optimizer learning rate (float)
+    :param train_criterion: Which loss to use during training (torch.nn._Loss)
+    :param model_optimizer: Which model optimizer to use during trainnig (torch.optim.Optimizer)
+    :param data_augmentations: List of data augmentations to apply such as rescaling.
+        (list[transformations], transforms.Composition[list[transformations]], None)
+        If none only ToTensor is used
+    :return:
+    """
+    if train_criterion == torch.nn.MSELoss:
+        train_criterion = train_criterion(reduction='mean')  # not instantiated until now
+    else:
+        train_criterion = train_criterion()
+
+    # Device configuration (fixed to cpu as we don't provide GPUs for the project)
+    device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    if data_augmentations is None:
+        # We only use ToTensor here as that is al that is needed to make it work
+        data_augmentations = transforms.ToTensor()
+    elif isinstance(type(data_augmentations), list):
+        data_augmentations = transforms.Compose(data_augmentations)
+    elif not isinstance(data_augmentations, transforms.Compose):
+        raise NotImplementedError
+
+    if dataset == 'KMNIST':
+        train_dataset = KMNIST(data_dir, True, data_augmentations)
+        test_dataset = KMNIST(data_dir, False, data_augmentations)
+    elif dataset == 'K49':
+        train_dataset = K49(data_dir, True, data_augmentations)
+        test_dataset = K49(data_dir, False, data_augmentations)
+    else:
+        raise NotImplementedError
+
+    train_loader = DataLoader(dataset=train_dataset,
+                              batch_size=batch_size,
+                              shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset,
+                             batch_size=batch_size,
+                             shuffle=False)
+
+    model = ConfigurableNet(model_config,
+                            num_classes=train_dataset.n_classes,
+                            height=train_dataset.img_rows,
+                            width=train_dataset.img_cols,
+                            channels=train_dataset.channels).to(device)
+    total_model_params = np.sum(p.numel() for p in model.parameters())
+
+    equal_freq = [1 / train_dataset.n_classes for _ in range(train_dataset.n_classes)]
+    logging.debug('Train Dataset balanced: {}'.format(np.allclose(train_dataset.class_frequency, equal_freq)))
+    logging.debug(' Test Dataset balanced: {}'.format(np.allclose(test_dataset.class_frequency, equal_freq)))
+    logging.info('Generated Network:')
+    summary(model, (train_dataset.channels, train_dataset.img_rows, train_dataset.img_cols), device='cpu')
+
+    # Train the model
+    if model_optimizer == torch.optim.Adam:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate, amsgrad=opti_aux_param)
+    elif model_optimizer == torch.optim.SGD:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate, momentum=opti_aux_param)
+    else:
+        optimizer = model_optimizer(model.parameters(), lr=learning_rate)
+    total_step = len(train_loader)
+    train_time = time.time()
+    epoch_times = []
+    track_train_loss = []
+    track_test_loss = []
+    for epoch in range(num_epochs):
+        logging.info('#' * 120)
+        epoch_loss = []
+        epoch_start_time = time.time()
+        for i_batch, (images, labels) in enumerate(train_loader):
+            images = images.to(device)
+            labels = labels.to(device)
+
+            # Forward -> Backward <- passes
+            outputs = model(images)    # outputs.detach().numpy()
+            if type(train_criterion) == torch.nn.MSELoss:
+                one_hot = torch.zeros((len(labels), 10))
+                for i, l in enumerate(one_hot): one_hot[i][labels[i]] = 1
+                labels = one_hot
+            loss = train_criterion(outputs, labels)
+            epoch_loss.append(loss.data.numpy())
+            optimizer.zero_grad()  # zero out gradients for new minibatch
+            loss.backward()
+
+            optimizer.step()
+            if (i_batch + 1) % 100 == 0:
+                logging.info('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
+                    epoch + 1, num_epochs, i_batch + 1, total_step, loss.item()))
+        epoch_times.append(time.time() - epoch_start_time)
+        test_score, test_loss = eval(model, test_loader, device, train_criterion)
+        track_test_loss.append(test_loss)
+        track_train_loss.append(np.mean(epoch_loss))
+    train_time = time.time() - train_time
+
+    # Test the model
+    logging.info('~+~' * 40)
+    model.eval()
+    test_time = time.time()
+    train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
+    # if test:
+    # test_score, test_loss = eval(model, test_loader, device, train_criterion)
+    # else:
+    #     test_score, test_loss = eval(model, validation_loader, device, train_criterion)
+    logging.info("Evaluation done")
+    test_time = time.time() - test_time
+    if save_model_str:
+        logging.info("Saving model...")
+        # Save the model checkpoint can be restored via "model = torch.load(save_model_str)"
+        if os.path.exists(save_model_str):
+            save_model_str += '_'.join(time.ctime())
+        torch.save(model.state_dict(), save_model_str)
+    logging.info("Returning from train()")
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model, track_train_loss, track_test_loss
+
+#########################################################################################################################
 if __name__ == '__main__':
     """
     This is just an example of how you can use train and evaluate to interact with the configurable network

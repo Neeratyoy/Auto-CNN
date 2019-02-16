@@ -368,12 +368,18 @@ class MyWorker(Worker):
                 CS.ForbiddenEqualsClause(maxpool_2, 'True'),
                 CS.ForbiddenInClause(kernel_3, ['5', '7'])
         )
+        for_three_layers_12 = CS.ForbiddenAndConjunction(
+                # Disallowing large convolution filter following a large max pool
+                CS.ForbiddenInClause(kernel_2, ['5', '7']),
+                CS.ForbiddenEqualsClause(maxpool_1, 'True'),
+                CS.ForbiddenInClause(kernel_3, ['5', '7'])
+        )
         config_space.add_forbidden_clauses([for_two_layers_1, for_two_layers_2, for_two_layers_2,
                                             for_three_layers_1_0, for_three_layers_1_1, for_three_layers_1_2,
                                             for_three_layers_2, for_three_layers_3,
                                             for_three_layers_4, for_three_layers_5, for_three_layers_6,
                                             for_three_layers_7, for_three_layers_8, for_three_layers_9,
-                                            for_three_layers_10, for_three_layers_11])
+                                            for_three_layers_10, for_three_layers_11, for_three_layers_12])
         # Forbidding a large convolution mask in the last layers
         last_layer_mask_1 = CS.ForbiddenAndConjunction(
                 CS.ForbiddenEqualsClause(n_conv_layer, 3),
