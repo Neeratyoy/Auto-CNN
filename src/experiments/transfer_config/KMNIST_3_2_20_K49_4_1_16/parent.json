@@ -1,0 +1,1 @@
+{"activation": "relu", "batch_size": "200", "batchnorm": "True", "channel_1": 8, "dropout": "True", "kernel_1": "7", "learning_rate": 0.002090936974113778, "model_optimizer": "adam", "n_conv_layer": 2, "n_fc_layer": 2, "padding_1": 0, "stride_1": 2, "amsgrad": "True", "channel_2": "4", "fc_1": 301, "kernel_2": "5", "padding_2": 0, "stride_2": 2}

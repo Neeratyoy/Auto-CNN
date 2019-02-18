@@ -23,7 +23,8 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_source", dest="dataset_source", type=str, default='KMNIST')
     parser.add_argument("--dataset_dest", dest="dataset_dest", type=str, default='K49')
     parser.add_argument("--config_dir", dest="config_dir", type=str, default='bohb/KMNIST/4_2_20/')
-    parser.add_argument("--epochs", dest="epochs", type=int, default=1)
+    parser.add_argument("--epochs_source", dest="epochs_source", type=int, default=1)
+    parser.add_argument("--epochs_dest", dest="epochs_dest", type=int, default=1)
     args, kwargs = parser.parse_known_args()
 
     start_time = time.time()
@@ -51,7 +52,7 @@ if __name__ == "__main__":
         dataset=dataset,  # dataset to use
         model_config=config,
         data_dir='../data',
-        num_epochs=args.epochs,
+        num_epochs=args.epochs_source,
         batch_size=int(config['batch_size']),
         learning_rate=config['learning_rate'],
         train_criterion=torch.nn.CrossEntropyLoss,
@@ -78,7 +79,7 @@ if __name__ == "__main__":
         old_model=model, # learnt model from previous dataset
         # model_config=config,
         data_dir='../data',
-        num_epochs=args.epochs,
+        num_epochs=args.epochs_dest,
         batch_size=int(config['batch_size']),
         learning_rate=config['learning_rate'],
         train_criterion=torch.nn.CrossEntropyLoss,

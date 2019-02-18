@@ -30,7 +30,8 @@ def plot_learning_curve(train, test, out_dir):
     plt.xticks(range(1, len(train)+1))
     plt.xlim(1,len(train))
     plt.legend()
-    plt.grid(which='major', linestyle=':', axis='y')
+    plt.grid(which='major', linestyle=':') #, axis='y')
+    plt.grid(which='minor', linestyle='--', axis='y')
     plt.savefig(out_dir+'learning_curve.png')
 
 
