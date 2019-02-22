@@ -1,0 +1,7 @@
+"CPU Time Used","Estimated Training Performance","Wallclock Time","Incumbent ID","Automatic Configurator (CPU) Time","Configuration..."
+-1.000000, 0.387820, 61.412930, 1, 62.412930, batch_size='532', channel_1='15', channel_2='2', n_fc_layer='2', fc_nodes='575'
+-1.000000, 0.327821, 391.395971, 6, 392.395971, batch_size='218', channel_1='18', channel_2='2', n_fc_layer='2', fc_nodes='372'
+-1.000000, 0.288800, 7484.181899, 19, 7485.181899, batch_size='171', channel_1='17', channel_2='3', n_fc_layer='2', fc_nodes='557'
+-1.000000, 0.270564, 7583.611474, 20, 7584.611474, batch_size='289', channel_1='19', channel_2='4', n_fc_layer='2', fc_nodes='748'
+-1.000000, 0.259388, 12473.317275, 36, 12474.317275, batch_size='140', channel_1='19', channel_2='4', n_fc_layer='2', fc_nodes='450'
+-1.000000, 0.259388, 13887.812382, 36, 13888.812382, batch_size='140', channel_1='19', channel_2='4', n_fc_layer='2', fc_nodes='450'

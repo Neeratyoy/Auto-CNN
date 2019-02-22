@@ -67,7 +67,7 @@ def generateLossComparison(out_dir, show=False):
     hB.set_visible(False)
     hR.set_visible(False)
     hG.set_visible(False)
-    plt.savefig(out_dir+'/loss_comparison_plot.png')
+    plt.savefig(out_dir+'/loss_comparison_plot.png',dpi=300)
     if show:
         plt.show()
 
@@ -81,21 +81,21 @@ def generateViz(out_dir, show=False):
     # Let's plot the observed losses grouped by budget,
     hpvis.losses_over_time(all_runs)
     plt.tight_layout()
-    plt.savefig(out_dir+'/plot_losses_over_time.png', dpi=150)
+    plt.savefig(out_dir+'/plot_losses_over_time.png',,dpi=300)
     # the number of concurent runs,
     hpvis.concurrent_runs_over_time(all_runs)
     plt.tight_layout()
-    plt.savefig(out_dir + '/plot_concurrent_runs_over_time.png', dpi=150)
+    plt.savefig(out_dir + '/plot_concurrent_runs_over_time.png',dpi=300)
     # and the number of finished runs.
     hpvis.finished_runs_over_time(all_runs)
     plt.tight_layout()
-    plt.savefig(out_dir + '/plot_finished_runs_over_time.png', dpi=150)
+    plt.savefig(out_dir + '/plot_finished_runs_over_time.png',dpi=300)
     # This one visualizes the spearman rank correlation coefficients of the losses
     # between different budgets.
     hpvis.correlation_across_budgets(result)
     figure = plt.gcf()
     figure.set_size_inches(10, 10)
-    plt.savefig(out_dir + '/plot_correlation_across_budgets.png', dpi=150)
+    plt.savefig(out_dir + '/plot_correlation_across_budgets.png',dpi=300)
     # For model based optimizers, one might wonder how much the model actually helped.
     # The next plot compares the performance of configs picked by the model vs. random ones
     hpvis.performance_histogram_model_vs_random(all_runs, id2conf)

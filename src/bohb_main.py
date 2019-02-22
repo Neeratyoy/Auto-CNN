@@ -75,7 +75,7 @@ class MyWorker(Worker):
         #     maxpool = False
         # activation = config['activation']
 
-        train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, _ = train(
+        train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, _, _ = train(
             dataset=dataset,  # dataset to use
             model_config=config,
             # {  # model architecture

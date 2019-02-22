@@ -69,6 +69,24 @@ def train(dataset,
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
 
+    # data_augmentations=transforms.Compose([
+    #         transforms.ToPILImage(),
+    #         transforms.RandomRotation(15),
+    #         # transforms.Resize((28,28)),
+    #         # transforms.RandomAffine(degrees=15, translate=(0, 0.2), scale=(0.8,1.2), shear=10),
+    #         transforms.ToTensor()
+    # ])
+
+    # data_augmentations = transforms.Compose([
+    #     transforms.ToPILImage(),
+    #     transforms.RandomApply([transforms.RandomRotation(15)], p=0.5),
+    #     transforms.RandomChoice([transforms.Resize((28, 28)),
+    #                             transforms.RandomAffine(degrees=15, translate=(0,0.2),
+    #                                                     scale=(0.8,1.2), shear=10)]),
+    #     transforms.ToTensor()
+    # ])
+
+
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
         data_augmentations = transforms.ToTensor()
@@ -210,8 +228,18 @@ if __name__ == '__main__':
     train(
         args.dataset,  # dataset to use
         {  # model architecture
-            'n_layers': 2,
-            'n_conv_layer': 1
+            # 'n_layers': 2,
+            'n_fc_layer': 1,
+            'n_conv_layer': 1,
+            'dropout': 'False',
+            'batchnorm': 'False',
+            'channel_1': 3,
+            'padding_1': 2,
+            'stride_1': 1,
+            'kernel_1': 5,
+            'maxpool_1': 'True',
+            'maxpool_kernel_1': 6,
+            'activation': 'tanh'
         },
         data_dir=args.data_dir,
         num_epochs=args.epochs,

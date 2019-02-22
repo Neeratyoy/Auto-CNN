@@ -6,6 +6,8 @@ import torch
 import logging
 import json
 import time
+import numpy as np
+import itertools
 from matplotlib import pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +23,7 @@ def unified_config(parent, config):
         parent['fc_'+str(i+1)] = config['fc_nodes']  #500
     return parent
 
-def plot_learning_curve(train, test, out_dir):
+def plot_learning_curve(train, test, out_dir, name):
     plt.plot(range(1, len(train)+1), train, color='red', label='Training Loss')
     plt.plot(range(1, len(test)+1), test, color='green', label='Test Set Loss')
     plt.title('Learning Curve')
@@ -32,7 +34,47 @@ def plot_learning_curve(train, test, out_dir):
     plt.legend()
     plt.grid(which='major', linestyle=':') #, axis='y')
     plt.grid(which='minor', linestyle='--', axis='y')
-    plt.savefig(out_dir+'learning_curve.png')
+    plt.savefig(out_dir+'learning_curve_'+str(name)+'.png',dpi=300)
+
+def plot_confusion_matrix(cm, classes,
+                          out_dir,name,
+                          dataset='KMNIST',
+                          cmap=plt.cm.Blues,
+                          normalize=False,
+                          title='Confusion matrix'):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+    print(cm)
+    plt.clf()
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, fontsize=4, rotation=90)
+    if dataset=='K49':
+        plt.axvspan(2.5, 3.5, color='red', alpha=0.1, label='<1000 training examples')
+        plt.axvspan(43.5, 45.5, color='red', alpha=0.1)
+        plt.axvspan(31.5, 32.5, color='orange', alpha=0.1, label='<1000 training examples')
+        plt.axvspan(35.5, 36.5, color='orange', alpha=0.1)
+        # plt.legend(loc='bottom left')
+    plt.yticks(tick_marks, classes, fontsize=4)
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    # for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    #     plt.text(j, i, format(cm[i, j], fmt),
+    #              horizontalalignment="center",
+    #              color="white" if cm[i, j] > thresh else "black")
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.savefig(out_dir+'confusion_matrix_'+str(name)+'.png',dpi=300)
 
 
 if __name__ == '__main__':
@@ -88,7 +130,7 @@ if __name__ == '__main__':
     #     save_model_str=None,
     #     test=True
     # )
-    train_score, _, test_score, _, _, _, _, model, train, test = train_test(
+    train_score, _, test_score, _, _, _, _, model, train, test, cm = train_test(
         dataset=args.dataset,  # dataset to use
         model_config=inc_config,
         data_dir='../data',
@@ -102,7 +144,12 @@ if __name__ == '__main__':
         save_model_str=None
         # test=True
     )
-    plot_learning_curve(train, test, args.config_dir)
+    plot_learning_curve(train, test, args.config_dir, args.epochs)
+    if args.dataset == 'K49':
+        plot_confusion_matrix(cm, range(0,49), out_dir=args.config_dir, dataset=args.dataset, name=args.epochs, normalize=False)
+    else:
+        plot_confusion_matrix(cm, range(0,10), out_dir=args.config_dir, dataset=args.dataset, name=args.epochs, normalize=False)
+
     print("Time take to train and evalaute: ", time.time() - start)
     print('~+~'*40)
     print("Training Accuracy: ", train_score)

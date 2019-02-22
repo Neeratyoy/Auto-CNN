@@ -1,0 +1,18 @@
+DEBUG:cave.cavefacade.CAVE:Running CAVE version 1.1.5.dev
+INFO:cave.cavefacade.CAVE:Saving results to 'experiments/bohb/KMNIST/4_1_16/cave'
+DEBUG:cave.utils.hpbandster2smac.HpBandSter2SMAC:Detected and loaded "experiments/bohb/KMNIST/4_1_16/configspace.json". No backup-cs necessary
+DEBUG:cave.utils.hpbandster2smac.HpBandSter2SMAC:Loading configuration failed... trying alternatives
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.6/dist-packages/cave/utils/hpbandster2smac.py", line 147, in hpbandster2smac
+    config = self._get_config(run.config_id, id2config_mapping, cs)
+  File "/usr/local/lib/python3.6/dist-packages/cave/utils/hpbandster2smac.py", line 111, in _get_config
+    config = Configuration(cs, id2config[config_id]['config'])
+  File "ConfigSpace/configuration_space.py", line 1035, in ConfigSpace.configuration_space.Configuration.__init__
+  File "ConfigSpace/configuration_space.py", line 1061, in ConfigSpace.configuration_space.Configuration.is_valid_configuration
+  File "ConfigSpace/c_util.pyx", line 38, in ConfigSpace.c_util.check_configuration
+  File "ConfigSpace/c_util.pyx", line 138, in ConfigSpace.c_util.check_configuration
+  File "ConfigSpace/configuration_space.py", line 815, in ConfigSpace.configuration_space.ConfigurationSpace._check_forbidden
+  File "ConfigSpace/c_util.pyx", line 28, in ConfigSpace.c_util.check_forbidden
+  File "ConfigSpace/c_util.pyx", line 35, in ConfigSpace.c_util.check_forbidden
+ConfigSpace.exceptions.ForbiddenValueError: Given vector violates forbidden clause (Forbidden: n_conv_layer == 3 && Forbidden: maxpool_kernel_1 in {5, 6})
+DEBUG:cave.utils.hpbandster2smac.HpBandSter2SMAC:None of the alternatives worked...

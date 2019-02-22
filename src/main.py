@@ -11,6 +11,7 @@ from torchsummary import summary
 
 import numpy as np
 from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import confusion_matrix
 
 from cnn import ConfigurableNet
 from datasets import KMNIST, K49
@@ -44,10 +45,11 @@ def eval(model, loader, device, train_criterion, train=False):
             pred.extend(predicted)
         # return balanced accuracy where each sample is weighted according to occurrence in dataset
         score = balanced_accuracy_score(true, pred)
+        cnf_matrix = confusion_matrix(true, pred)
         str_ = 'rain' if train else 'est'
         logging.info('T{0} Accuracy of the model on the {1} t{0} images: {2}%'.format(str_, len(true), 100 * score))
         tot_loss = np.mean(tot_loss)
-    return score, tot_loss
+    return score, tot_loss, cnf_matrix
 
 
 def train(dataset,
@@ -107,9 +109,34 @@ def train(dataset,
     # sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, batch_size)
     # trainloader = data_utils.DataLoader(train_dataset, batch_size = batch_size, shuffle=True, sampler = sampler)
 
+    # Cheap evaluations for low budget (Optimistic compromise)
+    if num_epochs < 8:
+        # Sampling from all classes equally
+        label_dict = {}
+        for i in range(len(train_dataset)):
+            c = train_dataset[i][-1]
+            if c not in label_dict.keys():
+                label_dict[c] = [i]
+            else:
+                label_dict[c].append(i)
+        num_classes = len(label_dict.keys())
+        # Frequency of most under-represented class
+        f_min = len(train_dataset)
+        for keys in label_dict.keys():
+            if len(label_dict[keys]) < f_min:
+                f_min = len(label_dict[keys])
+        selected_data = np.array([])
+        for label in label_dict.keys():
+            selected_data = np.append(selected_data, np.random.choice(label_dict[label], f_min))
+
+
     if test is False:
-        dataset_size = len(train_dataset)
-        indices = list(range(dataset_size))
+        if num_epochs < 8:
+            dataset_size = len(selected_data)
+            indices = list(selected_data.astype(int))
+        else:
+            dataset_size = len(train_dataset)
+            indices = list(range(dataset_size))
         validation_split = 0.3
         split = int(np.floor(validation_split * dataset_size))
         # if shuffle_dataset:
@@ -186,9 +213,9 @@ def train(dataset,
     test_time = time.time()
     train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
     if test:
-        test_score, test_loss = eval(model, test_loader, device, train_criterion)
+        test_score, test_loss, cm = eval(model, test_loader, device, train_criterion)
     else:
-        test_score, test_loss = eval(model, validation_loader, device, train_criterion)
+        test_score, test_loss, cm = eval(model, validation_loader, device, train_criterion)
     logging.info("Evaluation done")
     test_time = time.time() - test_time
     if save_model_str:
@@ -198,7 +225,7 @@ def train(dataset,
             save_model_str += '_'.join(time.ctime())
         torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
-    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model, cm
 #########################################################################################################################
 
 
@@ -235,6 +262,16 @@ def train_test(dataset,
 
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
+    # data_augmentations = transforms.Compose([
+    #     transforms.ToPILImage(),
+    #     transforms.RandomApply([transforms.RandomRotation(15)], p=0.5),
+    #     transforms.RandomChoice([transforms.Resize((28, 28)),
+    #                              transforms.RandomAffine(degrees=15, translate=(0,0.2),
+    #                                                      scale=(0.8,1.2), shear=10)]),
+    #     transforms.ToTensor()
+    # ])
 
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
@@ -309,7 +346,7 @@ def train_test(dataset,
                 logging.info('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'.format(
                     epoch + 1, num_epochs, i_batch + 1, total_step, loss.item()))
         epoch_times.append(time.time() - epoch_start_time)
-        test_score, test_loss = eval(model, test_loader, device, train_criterion)
+        test_score, test_loss, cm = eval(model, test_loader, device, train_criterion)
         track_test_loss.append(test_loss)
         track_train_loss.append(np.mean(epoch_loss))
     train_time = time.time() - train_time
@@ -318,7 +355,7 @@ def train_test(dataset,
     logging.info('~+~' * 40)
     model.eval()
     test_time = time.time()
-    train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
+    train_score, train_loss, _ = eval(model, train_loader, device, train_criterion, train=True)
     # if test:
     # test_score, test_loss = eval(model, test_loader, device, train_criterion)
     # else:
@@ -332,7 +369,7 @@ def train_test(dataset,
             save_model_str += '_'.join(time.ctime())
         torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
-    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model, track_train_loss, track_test_loss
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model, track_train_loss, track_test_loss, cm
 
 #########################################################################################################################
 if __name__ == '__main__':

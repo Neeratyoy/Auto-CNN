@@ -93,6 +93,8 @@ def train(dataset,
     elif not isinstance(data_augmentations, transforms.Compose):
         raise NotImplementedError
 
+    # dataset = torchvision.datasets.ImageFolder('pytorch-examples/data/', transform=transforms)
+
     if dataset == 'KMNIST':
         train_dataset = KMNIST(data_dir, True, data_augmentations)
         test_dataset = KMNIST(data_dir, False, data_augmentations)
@@ -102,6 +104,29 @@ def train(dataset,
     else:
         raise NotImplementedError
 
+
+    # Sampling from all classes equally
+    label_dict = {}
+    for i in range(len(train_dataset)):
+        c = train_dataset[i][-1]
+        if c not in label_dict.keys():
+            label_dict[c] = [i]
+        else:
+            label_dict[c].append(i)
+    num_classes = len(label_dict.keys())
+    f_min = len(train_dataset)
+    for keys in label_dict.keys():
+        if len(label_dict[keys]) < f_min:
+            f_min = len(label_dict[keys])
+    # f_min = np.where(np.histogram(labels, bins=num_classes)[0] == np.min(np.histogram(labels, bins=num_classes)[0]))[0]
+    # f_min = len(label_dict[f_min[0]])
+    selected_data = np.array([])
+    for label in label_dict.keys():
+        # selected_data.append(np.random.choice(label_dict[label], f_min))
+        selected_data = np.append(selected_data, np.random.choice(label_dict[label], f_min))
+    # new_data = SubsetRandomSampler(selected_data)
+
+
     # WEIGHTED SAMPLING == STRATIFIED SAMPLING
     # class_sample_count = [10, 1, 20, 3, 4] # dataset has 10 class-1 samples, 1 class-2 samples, etc.
     # weights = 1 / torch.Tensor(class_sample_count)
@@ -109,8 +134,12 @@ def train(dataset,
     # trainloader = data_utils.DataLoader(train_dataset, batch_size = batch_size, shuffle=True, sampler = sampler)
 
     if test is False:
-        dataset_size = len(train_dataset)
-        indices = list(range(dataset_size))
+        if num_epochs < 9:
+            dataset_size = len(selected_data)
+            indices = list(selected_data.astype(int))
+        else:
+            dataset_size = len(train_dataset)
+            indices = list(range(dataset_size))
         validation_split = 0.3
         split = int(np.floor(validation_split * dataset_size))
         # if shuffle_dataset:
