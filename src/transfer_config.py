@@ -61,10 +61,11 @@ class TransferWorker(Worker):
                 opti_aux_param = True
             else:
                 opti_aux_param = False
-        elif load_config['model_optimizer'] == 'sgd':
-            opti_aux_param = load_config['momentum']
+        elif old_config['model_optimizer'] == 'sgd':
+            opti_aux_param = old_config['momentum']
         else:
             opti_aux_param = None
+        data_augmentation = config['aug_prob']
 
         train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, _ = train(
             dataset=dataset,  # dataset to use
@@ -76,7 +77,7 @@ class TransferWorker(Worker):
             train_criterion=training_loss,
             model_optimizer=model_optimizer,
             opti_aux_param=opti_aux_param,
-            data_augmentations=None,  # Not set in this example
+            data_augmentations=data_augmentation,  # Not set in this example
             save_model_str=save,
             test=test,
             old_config=old_config
@@ -99,6 +100,7 @@ class TransferWorker(Worker):
         batch = CSH.UniformIntegerHyperparameter('batch_size', lower=100, upper=1000, default_value=100, log=True)
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
+        aug_prob = CSH.UniformFloatHyperparameter('aug_prob', lower=0, upper=0.5, default_value=0)
 
         ############################
         # ARCHITECTURE HYPERPARAMS #
@@ -107,7 +109,7 @@ class TransferWorker(Worker):
         fc_nodes = CSH.UniformIntegerHyperparameter('fc_nodes', lower=50, upper=784, default_value=500, log=True)
         # dropout = CSH.CategoricalHyperparameter('dropout', choices=['True', 'False'], default_value='False')
         # batchnorm = CSH.CategoricalHyperparameter('batchnorm', choices=['True', 'False'], default_value='False')
-        config_space.add_hyperparameters([n_fc_layer, batch, fc_nodes])
+        config_space.add_hyperparameters([n_fc_layer, batch, fc_nodes, aug_prob])
 
         n_layers = reference_config['n_conv_layer']
         if n_layers >= 1:
@@ -152,6 +154,7 @@ if __name__ == "__main__":
     parser.add_argument("--config_dir", dest="config_dir", type=str, default='bohb/KMNIST/4_5_15/')
     parser.add_argument("--run_id", dest="run_id", type=str, default='cnn_bohb')
     parser.add_argument("--show_plots", dest="show_plots", type=bool, default=False)
+    parser.add_argument("--results", dest="results", type=bool, default=False)
     args, kwargs = parser.parse_known_args()
 
     start_time = time.time()
@@ -167,7 +170,7 @@ if __name__ == "__main__":
     dataset = args.dataset # Find way to pass to BOHB call sans config
 
     # Starting server to communicate between target algorithm and BOHB
-    NS = hpns.NameServer(run_id=args.run_id, host='127.0.0.1', port=None)
+    NS = hpns.NameServer(run_id=args.run_id, host='127.0.0.1') #, port=None)
     NS.start()
     w = TransferWorker(old_config=inc_config, nameserver='127.0.0.1', run_id=args.run_id)
     w.run(background=True)
@@ -214,3 +217,8 @@ if __name__ == "__main__":
     except:
         print("Issue with plot generation! Not all plots may have been generated.")
     print('~+~' * 40)
+
+    if args.results:
+        import generate_result
+        generate_result.main(config_dir=args.out_dir, dataset=args.dataset,
+                             epochs=20, transfer=True, data_augmentation=True)

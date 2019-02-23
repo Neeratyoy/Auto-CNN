@@ -11,10 +11,44 @@ from torchsummary import summary
 
 import numpy as np
 from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import confusion_matrix
 
 from cnn_transfer_learning import ConfigurableNet
 from datasets import KMNIST, K49
 
+#
+# def eval(model, loader, device, train_criterion, train=False):
+#     """
+#     Evaluation method
+#     :param model: Model to evaluate
+#     :param loader: data loader for either training or testing set
+#     :param device: torch device
+#     :param train: boolean to indicate if training or test set is used
+#     :return: accuracy on the data
+#     """
+#     true, pred = [], []
+#     tot_loss = []
+#     with torch.no_grad():  # no gradient needed
+#         for images, labels in loader:
+#             images = images.to(device)
+#             labels = labels.to(device)
+#             outputs = model(images)
+#             if type(train_criterion) == torch.nn.MSELoss:
+#                 one_hot = torch.zeros((len(labels), 10))
+#                 for i, l in enumerate(one_hot): one_hot[i][labels[i]] = 1
+#                 loss = train_criterion(outputs, one_hot)
+#             else:
+#                 loss = train_criterion(outputs, labels)
+#             tot_loss.append(loss)
+#             _, predicted = torch.max(outputs.data, 1)
+#             true.extend(labels)
+#             pred.extend(predicted)
+#         # return balanced accuracy where each sample is weighted according to occurrence in dataset
+#         score = balanced_accuracy_score(true, pred)
+#         str_ = 'rain' if train else 'est'
+#         logging.info('T{0} Accuracy of the model on the {1} t{0} images: {2}%'.format(str_, len(true), 100 * score))
+#         tot_loss = np.mean(tot_loss)
+#     return score, tot_loss
 
 def eval(model, loader, device, train_criterion, train=False):
     """
@@ -44,11 +78,11 @@ def eval(model, loader, device, train_criterion, train=False):
             pred.extend(predicted)
         # return balanced accuracy where each sample is weighted according to occurrence in dataset
         score = balanced_accuracy_score(true, pred)
+        cnf_matrix = confusion_matrix(true, pred)
         str_ = 'rain' if train else 'est'
         logging.info('T{0} Accuracy of the model on the {1} t{0} images: {2}%'.format(str_, len(true), 100 * score))
         tot_loss = np.mean(tot_loss)
-    return score, tot_loss
-
+    return score, tot_loss, cnf_matrix
 
 def train(dataset,
           # model_config,
@@ -84,6 +118,21 @@ def train(dataset,
 
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
+    if data_augmentations is not None:
+        print('-+-'*40)
+        print("Data Aug happening!")
+        print('-+-'*40)
+        data_augmentations = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomApply([transforms.RandomRotation(15),
+                                    transforms.Resize((28, 28))]#,
+                                    # transforms.RandomAffine(degrees=15, translate=(0,0.2),
+                                    #                         scale=(0.8,1.2), shear=10)]
+            , p=0.3),
+            transforms.ToTensor()
+        ])
 
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
@@ -266,11 +315,11 @@ def train(dataset,
     logging.info('~+~' * 40)
     model.eval()
     test_time = time.time()
-    train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
+    train_score, train_loss, _ = eval(model, train_loader, device, train_criterion, train=True)
     if test:
-        test_score, test_loss = eval(model, test_loader, device, train_criterion)
+        test_score, test_loss, cm = eval(model, test_loader, device, train_criterion)
     else:
-        test_score, test_loss = eval(model, validation_loader, device, train_criterion)
+        test_score, test_loss, cm = eval(model, validation_loader, device, train_criterion)
     logging.info("Evaluation done")
     test_time = time.time() - test_time
     if save_model_str:
@@ -280,7 +329,7 @@ def train(dataset,
             save_model_str += '_'.join(time.ctime())
         torch.save(model.state_dict(), save_model_str)
     logging.info("Returning from train()")
-    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model
+    return train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, model, cm
 
 
 # if __name__ == '__main__':

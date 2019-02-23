@@ -83,6 +83,7 @@ if __name__ == '__main__':
     parser.add_argument("--dataset", dest="dataset", type=str, default='KMNIST')
     parser.add_argument("--epochs", dest="epochs", type=int, default=1)
     parser.add_argument("--transfer", dest="transfer", type=bool, default=False)
+    parser.add_argument("--data_augmentation", dest="data_augmentation", type=str, default=None)
     args, kwargs = parser.parse_known_args()
 
     result = hpres.logged_results_to_HBS_result(args.config_dir)
@@ -130,6 +131,11 @@ if __name__ == '__main__':
     #     save_model_str=None,
     #     test=True
     # )
+    if args.data_augmentation is not None:
+        data_augmentation = inc_config['aug_prob']
+    else:
+        data_augmentation = None
+
     train_score, _, test_score, _, _, _, _, model, train, test, cm = train_test(
         dataset=args.dataset,  # dataset to use
         model_config=inc_config,
@@ -140,7 +146,7 @@ if __name__ == '__main__':
         train_criterion=torch.nn.CrossEntropyLoss,
         model_optimizer=opti_dict[inc_config['model_optimizer']],
         opti_aux_param=opti_aux_param,
-        data_augmentations=None,  # Not set in this example
+        data_augmentations=data_augmentation, 
         save_model_str=None
         # test=True
     )

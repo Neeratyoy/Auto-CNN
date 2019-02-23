@@ -78,6 +78,7 @@ def train(dataset,
         If none only ToTensor is used
     :return:
     """
+    fidelity_limit = 9
     if train_criterion == torch.nn.MSELoss:
         train_criterion = train_criterion(reduction='mean')  # not instantiated until now
     else:
@@ -85,6 +86,18 @@ def train(dataset,
 
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
+    # if data_augmentations is not None:
+    #     data_augmentations = transforms.Compose([
+    #         transforms.ToPILImage(),
+    #         transforms.RandomApply([transforms.RandomRotation(15),
+    #                                 transforms.Resize((28, 28))]#,
+    #                                 # transforms.RandomAffine(degrees=15, translate=(0,0.2),
+    #                                 #                         scale=(0.8,1.2), shear=10)]
+    #         , p=model_config['aug_prob']),
+    #         transforms.ToTensor()
+    #     ])
 
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
@@ -110,33 +123,34 @@ def train(dataset,
     # trainloader = data_utils.DataLoader(train_dataset, batch_size = batch_size, shuffle=True, sampler = sampler)
 
     # Cheap evaluations for low budget (Optimistic compromise)
-    if num_epochs < 8:
-        # Sampling from all classes equally
-        label_dict = {}
-        for i in range(len(train_dataset)):
-            c = train_dataset[i][-1]
-            if c not in label_dict.keys():
-                label_dict[c] = [i]
-            else:
-                label_dict[c].append(i)
-        num_classes = len(label_dict.keys())
-        # Frequency of most under-represented class
-        f_min = len(train_dataset)
-        for keys in label_dict.keys():
-            if len(label_dict[keys]) < f_min:
-                f_min = len(label_dict[keys])
-        selected_data = np.array([])
-        for label in label_dict.keys():
-            selected_data = np.append(selected_data, np.random.choice(label_dict[label], f_min))
+    # if num_epochs < fidelity_limit:
+    #     # Sampling from all classes equally
+    #     label_dict = {}
+    #     for i in range(len(train_dataset)):
+    #         c = train_dataset[i][-1]
+    #         if c not in label_dict.keys():
+    #             label_dict[c] = [i]
+    #         else:
+    #             label_dict[c].append(i)
+    #     num_classes = len(label_dict.keys())
+    #     # Frequency of most under-represented class
+    #     f_min = len(train_dataset)
+    #     for keys in label_dict.keys():
+    #         if len(label_dict[keys]) < f_min:
+    #             f_min = len(label_dict[keys])
+    #     selected_data = np.array([])
+    #     for label in label_dict.keys():
+    #         val = min(2*f_min, len(label_dict[label]))
+    #         selected_data = np.append(selected_data, np.random.choice(label_dict[label], val))
 
 
     if test is False:
-        if num_epochs < 8:
-            dataset_size = len(selected_data)
-            indices = list(selected_data.astype(int))
-        else:
-            dataset_size = len(train_dataset)
-            indices = list(range(dataset_size))
+        # if num_epochs < fidelity_limit:
+        #     dataset_size = len(selected_data)
+        #     indices = list(selected_data.astype(int))
+        # else:
+        dataset_size = len(train_dataset)
+        indices = list(range(dataset_size))
         validation_split = 0.3
         split = int(np.floor(validation_split * dataset_size))
         # if shuffle_dataset:
@@ -211,7 +225,7 @@ def train(dataset,
     logging.info('~+~' * 40)
     model.eval()
     test_time = time.time()
-    train_score, train_loss = eval(model, train_loader, device, train_criterion, train=True)
+    train_score, train_loss, _ = eval(model, train_loader, device, train_criterion, train=True)
     if test:
         test_score, test_loss, cm = eval(model, test_loader, device, train_criterion)
     else:
@@ -264,14 +278,16 @@ def train_test(dataset,
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
-    # data_augmentations = transforms.Compose([
-    #     transforms.ToPILImage(),
-    #     transforms.RandomApply([transforms.RandomRotation(15)], p=0.5),
-    #     transforms.RandomChoice([transforms.Resize((28, 28)),
-    #                              transforms.RandomAffine(degrees=15, translate=(0,0.2),
-    #                                                      scale=(0.8,1.2), shear=10)]),
-    #     transforms.ToTensor()
-    # ])
+    if data_augmentations is not None:
+        data_augmentations = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomApply([transforms.RandomRotation(15),
+                                    transforms.Resize((28, 28))]#,
+                                    # transforms.RandomAffine(degrees=15, translate=(0,0.2),
+                                    #                         scale=(0.8,1.2), shear=10)]
+            , p=model_config['aug_prob']),
+            transforms.ToTensor()
+        ])
 
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work

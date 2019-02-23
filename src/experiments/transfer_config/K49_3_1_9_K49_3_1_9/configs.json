@@ -1,0 +1,2 @@
+[[0, 0, 0], {"aug_prob": 0.20773161079584496, "batch_size": 407, "channel_1": 12, "n_fc_layer": 1}, {"model_based_pick": false}]
+[[0, 0, 1], {"aug_prob": 0.3642034712238892, "batch_size": 152, "channel_1": 15, "n_fc_layer": 2, "fc_nodes": 529}, {"model_based_pick": false}]

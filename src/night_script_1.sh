@@ -10,6 +10,8 @@
 
 # taskset -c 1 python3 bohb_main.py --dataset KMNIST --eta 3 --min_budget 2 --max_budget 20 --n_iterations 20 --out_dir experiments/bohb/KMNIST/3_2_20
 
+# taskset -c 1 python3 bohb_main.py --dataset KMNIST --eta 2 --min_budget 1 --max_budget 10 --n_iterations 20 --out_dir experiments/bohb/KMNIST/2_1_10
+
 # taskset -c 0 python3 bohb_main.py --dataset K49 --eta 3 --min_budget 1 --max_budget 9 --n_iterations 10 --out_dir experiments/bohb/K49/3_1_9
 
 # # ----------------------------
@@ -23,6 +25,8 @@
 # taskset -c 0 python3 generate_result.py --dataset KMNIST --epochs 20 --config_dir experiments/bohb/KMNIST/4_1_16
 
 # taskset -c 0 python3 generate_result.py --dataset KMNIST --epochs 20 --config_dir experiments/bohb/KMNIST/3_2_20/
+
+# taskset -c 1 python3 generate_result.py --dataset KMNIST --epochs 20 --config_dir experiments/bohb/KMNIST/2_1_10/
 
 # taskset -c 1 python3 generate_result.py --dataset K49 --epochs 20 --config_dir experiments/bohb/K49/3_1_9
 
@@ -93,17 +97,24 @@
 
 
 
-# # ----------------------------------------
-# # | TRANSFER LEARN WITH DATA AUGMENTATION|
-# # ----------------------------------------
-
-taskset -c 1 python3 transfer_learning.py --dataset_source KMNIST --dataset_dest K49 --config_dir experiments/bohb/KMNIST/2_1_16/ --epochs_source 20 --epochs_dest 20 > experiments/bohb/KMNIST/2_1_16/results.txt
-
-
 # # -----------------------
 # # | FIDELITY BOHB - K49 |
 # # -----------------------
 
-# taskset -c 1 python3 bohb_main.py --dataset K49 --eta 3 --min_budget 1 --max_budget 9 --n_iterations 10 --out_dir experiments/bohb/K49/3_1_9
+# taskset -c 1 python3 bohb_main.py --dataset K49 --eta 4 --min_budget 1 --max_budget 16 --n_iterations 10 --out_dir experiments/bohb/K49/4_1_16
+# sleep 5m
+# taskset -c 1 python3 generate_result.py --dataset K49 --epochs 20 --config_dir experiments/bohb/K49/4_1_16 
+# taskset -c 1 python3 generate_result.py --dataset K49 --epochs 20 --config_dir experiments/bohb/K49/4_1_16 --data_augmentation True
+
+
+# taskset -c 1 python3 bohb_main.py --dataset K49 --eta 2 --min_budget 1 --max_budget 16 --n_iterations 5 --out_dir experiments/bohb/K49/2_1_16
+# sleep 5m
+# taskset -c 1 python3 generate_result.py --dataset K49 --epochs 20 --config_dir experiments/bohb/K49/2_1_16
+
+
+# taskset -c 1 python3 bohb_main.py --dataset K49 --eta 3 --min_budget 1 --max_budget 9 --n_iterations 5 --out_dir experiments/bohb/K49/3_1_9
 # sleep 5m
 # taskset -c 1 python3 generate_result.py --dataset K49 --epochs 20 --config_dir experiments/bohb/K49/3_1_9
+
+
+taskset -c 1 python3 bohb_main.py --dataset K49 --out_dir experiments/bohb/K49/2_1_16/ --eta 2 --min_budget 1 --max_budget 16 --n_iterations 10

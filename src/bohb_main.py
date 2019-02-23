@@ -37,7 +37,6 @@ class MyWorker(Worker):
             save = kwargs.pop('save')
         except:
             save = None
-        logging.info("Tentative budget: "+str(budget*20/100))
         # dataset = 'KMNIST'
         # global dataset;
         data_dir = '../data'
@@ -60,6 +59,7 @@ class MyWorker(Worker):
         else:
             opti_aux_param = None
 
+        data_augmentation = None #config['aug_prob']
         # opti_aux_param = config[opti_aux_dict[config['model_optimizer']]] # Momentum or AMSGrad
         # if type(opti_aux_param) is not float and type(opti_aux_param) is not None:
         #     opti_aux_param = bool(opti_aux_param)
@@ -91,7 +91,7 @@ class MyWorker(Worker):
             train_criterion=training_loss,
             model_optimizer=model_optimizer,
             opti_aux_param=opti_aux_param,
-            data_augmentations=None,  # Not set in this example
+            data_augmentations=data_augmentation,  # Not set in this example
             save_model_str=save,
             test=test
         )
@@ -133,10 +133,11 @@ class MyWorker(Worker):
         ########################
         # loss = CSH.CategoricalHyperparameter('training_criterion', choices=['cross_entropy'], default_value='cross_entropy') # choices=['mse', 'cross_entropy']
         # batch = CSH.UniformIntegerHyperparameter('batch_size', lower=32, upper=1024, default_value=128)
+        # aug_prob = CSH.UniformFloatHyperparameter('aug_prob', lower=0, upper=0.5, default_value=0)
         batch = CSH.CategoricalHyperparameter('batch_size', choices=['50', '100', '200', '500', '1000'], default_value='100')
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
-        config_space.add_hyperparameters([batch])
+        config_space.add_hyperparameters([batch]) #, aug_prob])
 
         ############################
         # ARCHITECTURE HYPERPARAMS #
@@ -476,19 +477,8 @@ if __name__ == "__main__":
     except:
         print("Issue with plot generation! Not all plots may have been generated.")
     print('~+~' * 40)
-    # print('~+~' * 40)
-    # print('~+~' * 40)
-    # print('===' * 40)
-    # print("BUILDING AND EVALUATING INCUMBENT CONFIGURATION ON FULL TRAINING AND TEST SETS")
-    # print('===' * 40)
-    # result = hpres.logged_results_to_HBS_result(args.out_dir)
-    # id2conf = result.get_id2config_mapping()
-    # inc_id = result.get_incumbent_id()
-    # inc_config = id2conf[inc_id]['config']
-    # w = MyWorker('evaluating')
-    # res = w.compute(config=inc_config, budget=args.max_budget, test=True, save=None) #args.out_dir)
-    # print('~+~' * 40)
-    # # print("Training Accuracy: ", res['info']['train_score'])
-    # # print("Test Accuracy: ", res['info']['test_score'])
-    # print("Training Loss: ", res['info']['train_loss'])
-    # print("Test Loss: ", res['info']['test_score'])
+
+    if args.results:
+        import generate_result
+        generate_result.main(config_dir=args.out_dir, dataset=args.dataset,
+                epochs=20, transfer=True, data_augmentation=None)

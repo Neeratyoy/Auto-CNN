@@ -77,6 +77,7 @@ def train(dataset,
         If none only ToTensor is used
     :return:
     """
+    fidelity_limit = 9
     if train_criterion == torch.nn.MSELoss:
         train_criterion = train_criterion(reduction='mean')  # not instantiated until now
     else:
@@ -84,6 +85,17 @@ def train(dataset,
 
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
+
+    # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
+    if data_augmentations is not None:
+        data_augmentations = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomApply([transforms.RandomRotation(10),
+                                    # transforms.Resize((28, 28))],
+                                    transforms.RandomAffine(degrees=10, shear=10)]
+            , p=model_config['aug_prob']),
+            transforms.ToTensor()
+        ])
 
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
@@ -104,27 +116,28 @@ def train(dataset,
     else:
         raise NotImplementedError
 
-
-    # Sampling from all classes equally
-    label_dict = {}
-    for i in range(len(train_dataset)):
-        c = train_dataset[i][-1]
-        if c not in label_dict.keys():
-            label_dict[c] = [i]
-        else:
-            label_dict[c].append(i)
-    num_classes = len(label_dict.keys())
-    f_min = len(train_dataset)
-    for keys in label_dict.keys():
-        if len(label_dict[keys]) < f_min:
-            f_min = len(label_dict[keys])
-    # f_min = np.where(np.histogram(labels, bins=num_classes)[0] == np.min(np.histogram(labels, bins=num_classes)[0]))[0]
-    # f_min = len(label_dict[f_min[0]])
-    selected_data = np.array([])
-    for label in label_dict.keys():
-        # selected_data.append(np.random.choice(label_dict[label], f_min))
-        selected_data = np.append(selected_data, np.random.choice(label_dict[label], f_min))
-    # new_data = SubsetRandomSampler(selected_data)
+    if num_epochs < fidelity_limit:
+        # Sampling from all classes equally
+        label_dict = {}
+        for i in range(len(train_dataset)):
+            c = train_dataset[i][-1]
+            if c not in label_dict.keys():
+                label_dict[c] = [i]
+            else:
+                label_dict[c].append(i)
+        num_classes = len(label_dict.keys())
+        f_min = len(train_dataset)
+        for keys in label_dict.keys():
+            if len(label_dict[keys]) < f_min:
+                f_min = len(label_dict[keys])
+        # f_min = np.where(np.histogram(labels, bins=num_classes)[0] == np.min(np.histogram(labels, bins=num_classes)[0]))[0]
+        # f_min = len(label_dict[f_min[0]])
+        selected_data = np.array([])
+        for label in label_dict.keys():
+            # selected_data.append(np.random.choice(label_dict[label], f_min))
+            val = min(2*f_min, len(label_dict[label]))
+            selected_data = np.append(selected_data, np.random.choice(label_dict[label], val))
+        # new_data = SubsetRandomSampler(selected_data)
 
 
     # WEIGHTED SAMPLING == STRATIFIED SAMPLING
@@ -134,7 +147,7 @@ def train(dataset,
     # trainloader = data_utils.DataLoader(train_dataset, batch_size = batch_size, shuffle=True, sampler = sampler)
 
     if test is False:
-        if num_epochs < 9:
+        if num_epochs < fidelity_limit:
             dataset_size = len(selected_data)
             indices = list(selected_data.astype(int))
         else:

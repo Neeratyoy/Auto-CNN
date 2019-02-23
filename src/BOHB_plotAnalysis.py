@@ -81,7 +81,7 @@ def generateViz(out_dir, show=False):
     # Let's plot the observed losses grouped by budget,
     hpvis.losses_over_time(all_runs)
     plt.tight_layout()
-    plt.savefig(out_dir+'/plot_losses_over_time.png',,dpi=300)
+    plt.savefig(out_dir+'/plot_losses_over_time.png',dpi=300)
     # the number of concurent runs,
     hpvis.concurrent_runs_over_time(all_runs)
     plt.tight_layout()
