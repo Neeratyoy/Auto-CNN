@@ -14,8 +14,8 @@ class ConfigurableNet(nn.Module):
         """
         # return int(np.floor((dim + 2 * padding - dilation * (kernel_size - 1) + 1) / stride))
         return int(np.floor((dim + 2*padding - (dilation*(kernel_size-1) + 1))/stride + 1))
-        # output_size=(w+2*pad-(d(k-1)+1))/s+1, https://github.com/vlfeat/matconvnet/issues/1010
         # ^ works for both maxpool=T and maxpool=F
+        # ^ output_size=(w+2*pad-(d(k-1)+1))/s+1, https://github.com/vlfeat/matconvnet/issues/1010
 
     def __init__(self, config, num_classes=10, height=28, width=28, channels=1):
         """
@@ -28,33 +28,48 @@ class ConfigurableNet(nn.Module):
         """
         super(ConfigurableNet, self).__init__()
         self.config = config
+
+        # Converting True/False str to bool (probably not the most efficient ways)
         dropout_dict = {'True': True, 'False': False}
         dropout = dropout_dict[config['dropout']]
         batchnorm_dict = {'True':True, 'False':False}
         batchnorm = batchnorm_dict[config['batchnorm']]
 
+        # determine activation function
+        activation = config['activation']
+        # activation = 'tanh'
+        if activation == 'relu':
+            act = nn.ReLU()
+        elif activation == 'sigmoid':
+            act = nn.Sigmoid()
+        elif activation == 'tanh':
+            act = nn.Tanh()
+        else:
+            # Add more activation funcs?
+            raise NotImplementedError
+
+        # Constructing actual channel sizes since channel_1 is int while others are multiplicative factors as str
         channel_dict = {'1': int(config['channel_1'])}
         for i in range(2, config['n_conv_layer']+1):
             # Multiplying the multiplicative factor with previous channel size
             channel_dict[str(i)] = int(np.floor(float(config['channel_'+str(i)]) * channel_dict[str(i-1)]))
 
-        # Keeping track of internals like changeing dimensions
+        # Keeping track of internals like changing dimensions
         n_convs = config['n_conv_layer']
         n_fc_layers = config['n_fc_layer']
         n_layers = n_convs + n_fc_layers
         conv_layer = 0
         self.layers = []
         self.mymodules = nn.ModuleList()
-        # out_channels = channels
         out_channels = channel_dict['1']
 
         # Create sequential network
         for layer in range(n_layers):
-            if n_convs >= 1:  # This way it only supports multiple convolutional layers at the beginning (not inbetween)
+            if n_convs >= 1:  # This way it only supports multiple convolutional layers at the beginning (not in between)
                 l = []  # Conv layer can be sequential layer with Batch Norm and pooling
-                padding = config['padding_'+str(layer+1)] # 5 0 #2
-                stride = config['stride_'+str(layer+1)] # 5 0 #21
-                kernel_size = int(config['kernel_'+str(layer+1)]) # 5
+                padding = config['padding_'+str(layer+1)]
+                stride = config['stride_'+str(layer+1)]
+                kernel_size = int(config['kernel_'+str(layer+1)])
                 dilation = 1  # fixed
                 # if conv_layer == 0:
                 #     out_channels = 3
@@ -74,34 +89,17 @@ class ConfigurableNet(nn.Module):
                 l.append(c)
 
                 # batchnorm yes or no?
-                # try:
-                #     batchnorm = batchnorm_dict[config['batchnorm_'+str(layer+1)]]
-                # except KeyError:
-                #     batchnorm = config['batchnorm_'+str(layer+1)] = False
                 # batchnorm = False
                 if batchnorm:
                     b = nn.BatchNorm2d(channels)
                     l.append(b)
 
                 # add activation function
-                # determine activation function
-                activation = config['activation']
-                # activation = 'tanh'
-                if activation == 'relu':
-                    act = nn.ReLU()
-                elif activation == 'sigmoid':
-                    act = nn.Sigmoid()
-                elif activation == 'tanh':
-                    act = nn.Tanh()
-                else:
-                    # Add more activation funcs?
-                    raise NotImplementedError
                 l.append(act)
 
-                # Adding Dropout
+                # Adding Dropout conditionally
                 if dropout:
                     l.append(nn.Dropout(0.2))
-                    # l.append(nn.Dropout(config['dropout_'+str(layer+1)]))
 
                 # do max pooling yes or no?
                 maxpool_dict = {'True':True, 'False':False}
@@ -112,7 +110,7 @@ class ConfigurableNet(nn.Module):
                 # max_pooling = True
                 if max_pooling:
                     m_ks = config['maxpool_kernel_'+str(layer+1)] # 6
-                    m_stride = m_ks #6
+                    m_stride = m_ks   # Maxpool kernel size == stride size
                     pool = nn.MaxPool2d(kernel_size=m_ks,
                                         stride=m_stride)
                     l.append(pool)
@@ -131,38 +129,22 @@ class ConfigurableNet(nn.Module):
                 if n_convs == 0:  # compute fully connected input size
                     channels = height * width * channels
                     n_convs -= 1
-                    #           in_channels, out_channels
                 output_count = config['fc_'+str(layer+1-config['n_conv_layer'])]
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
+                # add batch norm conditionally
                 if batchnorm:
                     b = nn.BatchNorm1d(output_count)
                     lay.append(b)
-                # determine activation function
-                activation = config['activation']
-                # activation = 'tanh'
-                if activation == 'relu':
-                    act = nn.ReLU()
-                elif activation == 'sigmoid':
-                    act = nn.Sigmoid()
-                elif activation == 'tanh':
-                    act = nn.Tanh()
-                else:
-                    # Add more activation funcs?
-                    raise NotImplementedError
+                # add activation function
                 lay.append(act)
+                # add dropout conditionally
                 if dropout:
                     lay.append(nn.Dropout(0.5))
-                    # lay.append(nn.Dropout(config['fc_dropout_'+str(layer+1-config['n_conv_layer'])]))
-                # if batchnorm:
-                #     b = nn.BatchNorm2d(channels)
-                #     lay.append(b)
+
                 s = nn.Sequential(*lay)
                 self.mymodules.append(s)
                 self.layers.append(s)
-                # lay = nn.Linear(channels, output_count)
-                # self.mymodules.append(lay)
-                # self.layers.append(lay)
                 channels = output_count  # update the channels to keep track how many inputs lead to the next layer
                 # lay = nn.Linear(channels, 500)
                 # self.mymodules.append(lay)

@@ -5,6 +5,13 @@ from matplotlib import gridspec
 import numpy as np
 
 def setBoxColors(bp, col1='blue', col2='red'):
+    '''
+    Function to annotate box plot components with different colours to demarcate train and validation
+    :param bp: Boxplot object
+    :param col1: Colour 1 for Training
+    :param col2: Colour 2 for Testing
+    :return: Nothing really - kind of pass by reference
+    '''
     plt.setp(bp['boxes'][0], color=col1)
     plt.setp(bp['caps'][0], color=col1)
     plt.setp(bp['caps'][1], color=col1)
@@ -23,7 +30,14 @@ def setBoxColors(bp, col1='blue', col2='red'):
     # plt.setp(bp['fliers'][3], color=col2)
     plt.setp(bp['medians'][1], color=col2)
 
+
 def generateLossComparison(out_dir, show=False):
+    '''
+    Function to generate box plots over different budgets for an entire BOHB run
+    :param out_dir: Directory where the plots are to be saved
+    :param show: True/False to display the plots (additionally to saving)
+    :return: void
+    '''
     # load the example run from the log files
     result = hpres.logged_results_to_HBS_result(out_dir)
 
@@ -53,17 +67,17 @@ def generateLossComparison(out_dir, show=False):
     for i, k in enumerate(plot_data.keys()):
         exec("ax"+str(i+1)+" = plt.subplot(gs[0, "+str(i)+"])")
         exec("ax"+str(i+1)+".grid(which='major', linestyle=':', axis='y')")
-        exec("bp = ax"+str(i+1)+".boxplot(plot_data["+str(k)+"], showmeans=True, meanline=True, sym='+', meanprops={'linestyle':'-'},whiskerprops={'linestyle': '--', 'color': 'blue'})")
+        exec("bp = ax"+str(i+1)+".boxplot(plot_data["+str(k)+"], showmeans=True, meanline=True, "+
+             "sym='+', meanprops={'linestyle':'-'},whiskerprops={'linestyle': '--', 'color': 'blue'})")
         exec("ax"+str(i+1)+".set_ylim(0, "+str(max_loss+0.1)+")")
         exec("ax"+str(i+1)+".set_xlabel('Budget:"+str(k)+"')")
         if i==0:
             exec("ax"+str(i+1)+".set_ylabel('Loss')")
         exec("setBoxColors(bp)")
-    # exec("ax0.set_ylabel('Loss')")
     hB, = plt.plot([1,1],'b-')
     hR, = plt.plot([1,1],'r-')
     hG, = plt.plot([1,1],'g-')
-    plt.figlegend((hB, hR, hG),('Training', 'Validation', 'Mean'),loc='upper right') #, ncol=5)
+    plt.figlegend((hB, hR, hG),('Training', 'Validation', 'Mean'),loc='upper right')
     hB.set_visible(False)
     hR.set_visible(False)
     hG.set_visible(False)
@@ -73,6 +87,12 @@ def generateLossComparison(out_dir, show=False):
 
 
 def generateViz(out_dir, show=False):
+    '''
+    Generate plots for BOHB (from BOHB_visualizations.py from the documentations)
+    :param out_dir: Directory to save the plots
+    :param show: True/False to display the plots (additionally to saving)
+    :return: void
+    '''
     result = hpres.logged_results_to_HBS_result(out_dir)
     # get all executed runs
     all_runs = result.get_all_runs()

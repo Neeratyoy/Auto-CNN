@@ -69,18 +69,6 @@ def train(dataset,
     # Device configuration (fixed to cpu as we don't provide GPUs for the project)
     device = torch.device('cpu')  # 'cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    # https://discuss.pytorch.org/t/data-augmentation-in-pytorch/7925/9
-    if data_augmentations is not None:
-        data_augmentations = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.RandomApply([transforms.RandomRotation(15),
-                                    transforms.Resize((28, 28)),
-                                    transforms.RandomAffine(degrees=15, shear=15)]
-            , p=model_config['aug_prob']),
-            transforms.ToTensor()
-        ])
-
-
     if data_augmentations is None:
         # We only use ToTensor here as that is al that is needed to make it work
         data_augmentations = transforms.ToTensor()

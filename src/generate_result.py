@@ -1,18 +1,24 @@
 import argparse
 import hpbandster.core.result as hpres
-from main import train
-from main import train_test
+from main import train, train_test
 import torch
 import logging
 import json
 import time
 import numpy as np
-import itertools
 from matplotlib import pyplot as plt
 
 logging.basicConfig(level=logging.INFO)
 
 def unified_config(parent, config):
+    '''
+    Function to concatenate configurations reveived from two different BOHB setups
+    Used for the Transfer Config setup wherein a parent configuration provides the Neural Architecture params and
+    other training hyperparameters. The config contains a subset of such parameters that are re-configured.
+    :param parent: Original configuration
+    :param config: Updating a subset of the original configuration
+    :return: Updated configuration
+    '''
     parent['batch_size'] = config['batch_size']
     for i in range(parent['n_conv_layer']):
         parent['channel_'+str(i+1)] = config['channel_'+str(i+1)]
@@ -20,10 +26,19 @@ def unified_config(parent, config):
         del(parent['fc_'+str(i+1)])
     parent['n_fc_layer'] = config['n_fc_layer']
     for i in range(config['n_fc_layer']-1):
-        parent['fc_'+str(i+1)] = config['fc_nodes']  #500
+        parent['fc_'+str(i+1)] = config['fc_nodes']
     return parent
 
+
 def plot_learning_curve(train, test, out_dir, name):
+    '''
+    Plots the learning curve - loss over epochs
+    :param train: The set of training losses over epochs
+    :param test: The set of test losses over epochs
+    :param out_dir: Directory to save the plots
+    :param name: Name appended to the plot saved 'learning_curve_[name].png'
+    :return: void
+    '''
     plt.plot(range(1, len(train)+1), train, color='red', label='Training Loss')
     plt.plot(range(1, len(test)+1), test, color='green', label='Test Set Loss')
     plt.title('Learning Curve')
@@ -36,16 +51,22 @@ def plot_learning_curve(train, test, out_dir, name):
     plt.grid(which='minor', linestyle='--', axis='y')
     plt.savefig(out_dir+'learning_curve_'+str(name)+'.png',dpi=300)
 
-def plot_confusion_matrix(cm, classes,
-                          out_dir,name,
-                          dataset='KMNIST',
-                          cmap=plt.cm.Blues,
-                          normalize=False,
-                          title='Confusion matrix'):
-    """
+
+def plot_confusion_matrix(cm, classes, out_dir,name, dataset='KMNIST', cmap=plt.cm.Blues,
+                          normalize=False, title='Confusion matrix'):
+    '''
     This function prints and plots the confusion matrix.
     Normalization can be applied by setting `normalize=True`.
-    """
+    :param cm: Confusion Matrix result from sklearn
+    :param classes: Names of the classes
+    :param out_dir: Directory to save the plot
+    :param name: Name appended to the plot saved 'confusion_matrix_[name].png'
+    :param dataset: Needed to mark low frequency classes for K49
+    :param cmap: Matplotlib color map to decide color palette for the plot
+    :param normalize: True to plot confusion matrix with the values normalized for true class distribution
+    :param title: Title for the plot
+    :return: void
+    '''
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")
@@ -67,6 +88,7 @@ def plot_confusion_matrix(cm, classes,
     plt.yticks(tick_marks, classes, fontsize=4)
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
+    # Marks the cells with actual values - Disabled for legibility on the large K49 [49x49] matrix
     # for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
     #     plt.text(j, i, format(cm[i, j], fmt),
     #              horizontalalignment="center",
@@ -79,11 +101,16 @@ def plot_confusion_matrix(cm, classes,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--config_dir", dest="config_dir", type=str)
-    parser.add_argument("--dataset", dest="dataset", type=str, default='KMNIST')
-    parser.add_argument("--epochs", dest="epochs", type=int, default=1)
-    parser.add_argument("--transfer", dest="transfer", type=bool, default=False)
-    parser.add_argument("--data_augmentation", dest="data_augmentation", type=str, default=None)
+    parser.add_argument('-c', "--config_dir", dest="config_dir", type=str,
+                        help='Directory that has config.json and results.json from a BOHB run')
+    parser.add_argument('-d', "--dataset", dest="dataset", type=str, default='KMNIST', choices=['KMNIST', 'K49'],
+                        help='Dataset to evaluate the incumbent configuration on')
+    parser.add_argument('-e', "--epochs", dest="epochs", type=int, default=1, choices=range(1,21),
+                        help='Number of epochs for training')
+    parser.add_argument('-t', "--transfer", dest="transfer", type=bool, default=False, choices=[True, False],
+                        help='Set to True if evaluating a Transfer Config BOHB output')
+    parser.add_argument('-a', "--data_augmentation", dest="data_augmentation", type=str, default=None,
+                        help='Set to True if Training data needs to be augmented')
     args, kwargs = parser.parse_known_args()
 
     result = hpres.logged_results_to_HBS_result(args.config_dir)
@@ -117,20 +144,7 @@ if __name__ == '__main__':
                 'sgd': torch.optim.SGD}
 
     start = time.time()
-    # train_score, _, test_score, _, _, _, _, model = train(
-    #     dataset=args.dataset,  # dataset to use
-    #     model_config=inc_config,
-    #     data_dir='../data',
-    #     num_epochs=args.epochs,
-    #     batch_size=int(inc_config['batch_size']),
-    #     learning_rate=inc_config['learning_rate'],
-    #     train_criterion=torch.nn.CrossEntropyLoss,
-    #     model_optimizer=opti_dict[inc_config['model_optimizer']],
-    #     opti_aux_param=opti_aux_param,
-    #     data_augmentations=None,  # Not set in this example
-    #     save_model_str=None,
-    #     test=True
-    # )
+
     if args.data_augmentation is not None:
         data_augmentation = inc_config['aug_prob']
     else:
@@ -156,6 +170,7 @@ if __name__ == '__main__':
     else:
         plot_confusion_matrix(cm, range(0,10), out_dir=args.config_dir, dataset=args.dataset, name=args.epochs, normalize=False)
 
+    print('~+~' * 40)
     print("Time take to train and evalaute: ", time.time() - start)
     print('~+~'*40)
     print("Training Accuracy: ", train_score)
