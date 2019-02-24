@@ -114,11 +114,11 @@
 	\multicolumn{1}{|p{1.5cm}|}{\centering Test \\ Accuracy} &
 	\multicolumn{1}{|p{1.5cm}|}{\centering BOHB \\ Runtime} \\
 	\hline\hline
-	KMNIST & 2\_1\_16\_10 & 98.08\% & 99.58\% & 94.69\% & \textless3 hrs \\
+	KMNIST & 2\_1\_16\_10 & 98.08\% & 99.81\% & 95.06\% & \textless3 hrs \\
 	KMNIST & 3\_1\_9\_20 & 97.17\% & 98.23\% & 93.26\% & \textless3 hrs \\
-	KMNIST & 4\_1\_16\_20 & 98.26\% & 99.95\% & 95.98\% & \textless4 hrs \\
-	KMNIST & 2\_1\_10\_14 & 97.77\% & 99.98\% & 94.09\% & \textless4 hrs \\
-	KMNIST & 3\_2\_20\_20 & 98.31\% & 99.57\% & 95.51\% & \textless6 hrs \\
+	KMNIST & 4\_1\_16\_20 & 98.26\% & 99.98\% & 96.41\% & \textless4 hrs \\
+	KMNIST & 2\_1\_10\_14 & 97.77\% & 99.86\% & 94.08\% & \textless4 hrs \\
+	KMNIST & 3\_2\_20\_20 & 98.31\% & 99.62\% & 95.41\% & \textless6 hrs \\
 	\hline \pause
 	K49 & 3\_1\_9\_10 & 89.06\% & 99.93\% & 88.12\% & \textless5 hrs \\
 	K49 & 2\_1\_10\_10 & 91.19\% & 99.25\% & 88.25\% & \textless12 hrs \\
@@ -147,19 +147,20 @@
 		\multicolumn{1}{|p{0.8cm}|}{\centering K49 \\ Test} &
 		\multicolumn{1}{|p{1cm}|}{\centering Run- \\ time} \\
 		\hline\hline
-		94.69\% & 96.45\% & 89.91\% & \textless1hr \\
-		95.51\% & 95.62\% & 90.20\% & \textless1hr \\
-		95.98\% & 99.63\% & 93.07\% & \textless1hr \\
+		95.06\% & 97.15\% & 90.49\% & \textless2hrs \\
+		95.41\% & 95.91\% & 90.63\% & \textless1hr \\
+		96.41\% & 99.67\% & 93.32\% & \textless4hrs \\
 		\hline
 	\end{tabular*}
 	\pause
 	\vspace{0.5cm} \\
-	\onslide<2->{Configuration: KMNIST $\rightarrow$ K49} \\
-	\onslide<2->{Hyperparameters for BOHB:
+	\onslide<2->{Configuration: KMNIST $\xrightarrow{\text{BOHB}}$ K49} \\
+	\vspace{0.1cm}
+	\onslide<2->{Hyperparameters:
 	\begin{itemize}
-		\item batch size
 		\item \# of channels
 		\item \# of FC layers and neurons
+		\item batch size
 	\end{itemize}}
 	\onslide<2->\begin{tabular*}{\textwidth}{|c|c|c|c|}
 %	\onslide<3->\begin{tabular*}{\textwidth}{|>{\small}c|>{\small}c|>{\small}c|>{\small}c|}
@@ -169,8 +170,8 @@
 		\multicolumn{1}{|p{0.8cm}|}{\centering K49 \\ Test} &
 		\multicolumn{1}{|p{1cm}|}{\centering Run- \\ time} \\
 		\hline\hline
-		95.51\% & 99.86\% & 93.85\% & \textless6hrs \\
-		95.98\% & 99.93\% & 94.19\% & \textless20hrs \\
+		95.41\% & 98.87\% & 90.20\% & \textless4hrs \\
+		96.41\% & 99.93\% & 94.28\% & \textless20hrs \\
 		\hline
 	\end{tabular*}
 	\column{0.48\textwidth}
@@ -186,9 +187,67 @@
 \end{frame}
 
 
+%%
+% SLIDE 5 - Conclusion
+%%
 \begin{frame}
-\frametitle{Final Results}
-Final numbers to report.
-\end{frame}
+\frametitle{In Conclusion...}
+\begin{columns}
+	\column{0.5\textwidth}
+	Possible improvements:
+	\begin{itemize}
+		\item Fidelity (data subsets)
+		\begin{itemize}
+			\item K49: 90.20\% $\rightarrow$ 93.85\%
+		\end{itemize} 
+		\pause
+		\item Data Augmentation
+		\begin{itemize}
+			\item K49: 94.28\% $\rightarrow$ 93.37\% (with fidelity)
+		\end{itemize}
+		\pause
+		\item Better/more parameters for transfer configuration
+		\begin{itemize}
+			\item Learning rate schedule
+			\item Optimizer
+		\end{itemize}
+		\pause
+		\item EPMs to try reduce parameter blow ups and runtimes
+		\pause
+		\item NAS cell search
+		\pause
+		\item Padding to go deeper (exploit sparsity)
+	\end{itemize}
+	\hrule
+	\vspace{0.2cm}
+	\underline{Final Numbers}:
+	\vspace{0.15cm}
+	\begin{tabular}{|c|c|c|}
+		%	\onslide<3->\begin{tabular*}{\textwidth}{|>{\small}c|>{\small}c|>{\small}c|>{\small}c|}
+		\hline
+%		\multicolumn{1}{|p{1cm}|}{\centering Dataset} &
+%		\multicolumn{1}{|p{1cm}|}{\centering Default \\ Test} &
+%		\multicolumn{1}{|p{1cm}|}{\centering Best \\ Test} \\
+		Dataset & Default Test & Best Test \\
+		\hline\hline
+		KMNIST & 69.56\% & 97.89\% \\
+		\hline
+		K49 & 54.43\% & 94.28\%  \\
+		\hline
+	\end{tabular}
+	KMNIST: \textit{from transferring best K49 model}\\
+	K49: \textit{from transferring incumbent config on KMNIST and then BOHB on K49}\\
+	\column{0.48\textwidth}
+	\includegraphics[height=4cm, width=6cm]{../plots/k49_confusion_matrix_default.png}
+	\includegraphics[height=5cm, width=7cm]{../plots/confusion_matrix_20.png}
+\end{columns}\end{frame}
+
+%\begin{onlyenv}<3-6>
+%	\begin{center}
+%		\includegraphics<3>[scale=0.4]{image-a}
+%		\includegraphics<4>[scale=0.4]{image-b}
+%		\includegraphics<6>[scale=0.4]{image-c}
+%	\end{center}
+%\end{onlyenv}
 
 \end{document}
