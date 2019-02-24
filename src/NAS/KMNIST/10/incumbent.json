@@ -1,1 +1,0 @@
-{"activation": "relu", "batch_size": "100", "batchnorm": "True", "channel": 10, "dropout": "True", "kernel": "7", "learning_rate": 0.00041378401853379987, "model_optimizer": "adam", "padding": 2, "stride": 1, "maxpool": "True", "maxpool_kernel": 4}

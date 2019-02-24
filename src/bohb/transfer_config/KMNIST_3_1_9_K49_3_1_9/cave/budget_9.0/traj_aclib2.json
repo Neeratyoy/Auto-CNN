@@ -1,2 +1,0 @@
-{"cpu_time": -1, "total_cpu_time": null, "wallclock_time": 3923.589968919754, "evaluations": 0, "cost": 0.21427381038665771, "incumbent": ["batch_size='259'", "channel_1='7'", "channel_2='4'", "n_fc_layer='2'", "fc_nodes='263'"], "origin": "Random"}
-{"cpu_time": -1, "total_cpu_time": null, "wallclock_time": 7717.118402004242, "evaluations": 0, "cost": 0.21427381038665771, "incumbent": ["batch_size='259'", "channel_1='7'", "channel_2='4'", "n_fc_layer='2'", "fc_nodes='263'"], "origin": "Random"}

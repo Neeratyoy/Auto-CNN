@@ -1,3 +1,0 @@
-{"cpu_time": -1, "total_cpu_time": null, "wallclock_time": 2447.607085466385, "evaluations": 0, "cost": 0.41758260130882263, "incumbent": ["batch_size='528'", "channel_1='19'", "channel_2='4'", "n_fc_layer='2'", "fc_nodes='121'"], "origin": "Random"}
-{"cpu_time": -1, "total_cpu_time": null, "wallclock_time": 2743.3174700737, "evaluations": 0, "cost": 0.3475961685180664, "incumbent": ["batch_size='259'", "channel_1='7'", "channel_2='4'", "n_fc_layer='2'", "fc_nodes='263'"], "origin": "Random"}
-{"cpu_time": -1, "total_cpu_time": null, "wallclock_time": 7717.118402004242, "evaluations": 0, "cost": 0.3475961685180664, "incumbent": ["batch_size='259'", "channel_1='7'", "channel_2='4'", "n_fc_layer='2'", "fc_nodes='263'"], "origin": "Random"}
