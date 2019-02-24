@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # ML4AAD WS18/19 Final Project
 
 The following repo is a cloned extension of the original base repo that we were given. \newline
