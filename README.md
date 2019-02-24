@@ -1,6 +1,6 @@
 # ML4AAD WS18/19 Final Project
 
-The following repo is a cloned extension of the original base repo that we were given. \newline
+The following repo is a cloned extension of the original base repo that we were given.
 https://bitbucket.org/biedenka/ml4aad_ws18_project/src/master/
 
 The src/ is maintained as per the original. However, the contents of the original src/ has been completely revamped. Details of which are given below.
