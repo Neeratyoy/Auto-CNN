@@ -14,7 +14,7 @@ from BOHB_plotAnalysis import generateLossComparison, generateViz
 
 class MyWorker(Worker):
     '''
-    The Worker class to run BOHB# logging.info(config)
+    The Worker class to run BOHB
     '''
     def __init__(self, *args, sleep_interval=0, **kwargs):
         super().__init__(*args, **kwargs)
@@ -85,7 +85,7 @@ class MyWorker(Worker):
             train_criterion=training_loss,
             model_optimizer=model_optimizer,
             opti_aux_param=opti_aux_param,
-            data_augmentations=data_augmentation,  # Not set in this example
+            data_augmentations=data_augmentation, 
             save_model_str=save,
             test=test
         )
@@ -412,7 +412,7 @@ def testWorker(budget, test=False, save=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-d", "--dataset", dest="dataset", type=str.upper, default='KMNIST', choices=['KMNIST, K49'],
+    parser.add_argument("-d", "--dataset", dest="dataset", type=str.upper, default='KMNIST', choices=['KMNIST', 'K49'],
                         help='Which dataset to evaluate on {K49, KMNIST}')
     # parser.add_argument("-w", "--n_workers", dest="n_workers", type=int, default=1,
     #                     help='Number of workers that will run')
@@ -430,7 +430,10 @@ if __name__ == "__main__":
                         help='Any specific run ID for annotation')
     parser.add_argument('-s', "--show_plots", dest="show_plots", type=bool, choices=[True, False], default=False,
                         help='To decide if plots additionally need to be opened in additional windows')
+    parser.add_argument('-v', '--verbose', default='INFO', choices=['INFO', 'DEBUG'], help='verbosity')
     args, kwargs = parser.parse_known_args()
+    log_lvl = logging.INFO if args.verbose == 'INFO' else logging.DEBUG
+    logging.basicConfig(level=log_lvl)
 
     start_time = time.time()
 

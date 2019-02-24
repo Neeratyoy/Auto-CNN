@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.1.18)  23 FEB 2019 17:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.1.18)  24 FEB 2019 05:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1044,12 +1044,12 @@ LaTeX Font Warning: Font shape `OML/cmss/m/n' undefined
 ] [10
 
 ]
-Overfull \hbox (2.90027pt too wide) in paragraph at lines 130--130
+Overfull \hbox (2.90027pt too wide) in paragraph at lines 131--131
  []|\OT1/cmss/m/n/8 eta[]min[]max[]iter 
  []
 
 
-Underfull \hbox (badness 10000) in alignment at lines 130--130
+Underfull \hbox (badness 10000) in alignment at lines 131--131
 [][][][][][] 
  []
 
@@ -1057,51 +1057,63 @@ Underfull \hbox (badness 10000) in alignment at lines 130--130
 File: ../plots/kmnist_bohb_loss_comparison_plot.png Graphic file (type png)
 <use ../plots/kmnist_bohb_loss_comparison_plot.png>
 Package pdftex.def Info: ../plots/kmnist_bohb_loss_comparison_plot.png  used on
- input line 130.
+ input line 131.
 (pdftex.def)             Requested size: 347.19511pt x 138.87592pt.
+
+Overfull \vbox (1.5149pt too high) detected at line 131
+ []
+
 [11
 
  <../plots/kmnist_bohb_loss_comparison_plot.png>]
-Overfull \hbox (2.90027pt too wide) in paragraph at lines 130--130
+Overfull \hbox (2.90027pt too wide) in paragraph at lines 131--131
  []|\OT1/cmss/m/n/8 eta[]min[]max[]iter 
  []
 
 
-Underfull \hbox (badness 10000) in alignment at lines 130--130
+Underfull \hbox (badness 10000) in alignment at lines 131--131
 [][][][][][] 
  []
 
 File: ../plots/kmnist_bohb_loss_comparison_plot.png Graphic file (type png)
 <use ../plots/kmnist_bohb_loss_comparison_plot.png>
 Package pdftex.def Info: ../plots/kmnist_bohb_loss_comparison_plot.png  used on
- input line 130.
+ input line 131.
 (pdftex.def)             Requested size: 347.19511pt x 138.87592pt.
+
+Overfull \vbox (1.5149pt too high) detected at line 131
+ []
+
 [12
 
 ]
-Overfull \hbox (2.90027pt too wide) in paragraph at lines 130--130
+Overfull \hbox (2.90027pt too wide) in paragraph at lines 131--131
  []|\OT1/cmss/m/n/8 eta[]min[]max[]iter 
  []
 
 
-Underfull \hbox (badness 10000) in alignment at lines 130--130
+Underfull \hbox (badness 10000) in alignment at lines 131--131
 [][][][][][] 
  []
 
 File: ../plots/kmnist_bohb_loss_comparison_plot.png Graphic file (type png)
 <use ../plots/kmnist_bohb_loss_comparison_plot.png>
 Package pdftex.def Info: ../plots/kmnist_bohb_loss_comparison_plot.png  used on
- input line 130.
+ input line 131.
 (pdftex.def)             Requested size: 347.19511pt x 138.87592pt.
+
+Overfull \vbox (1.5149pt too high) detected at line 131
+ []
+
 [13
 
 ]
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
@@ -1109,79 +1121,79 @@ Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
 File: ../plots/plot_performance_histogram.png Graphic file (type png)
 <use ../plots/plot_performance_histogram.png>
 Package pdftex.def Info: ../plots/plot_performance_histogram.png  used on input
- line 185.
+ line 186.
 (pdftex.def)             Requested size: 128.02927pt x 88.19794pt.
 <../plots/confusion_matrix_20.png, id=391, 462.528pt x 346.896pt>
 File: ../plots/confusion_matrix_20.png Graphic file (type png)
 <use ../plots/confusion_matrix_20.png>
 Package pdftex.def Info: ../plots/confusion_matrix_20.png  used on input line 1
-85.
+86.
 (pdftex.def)             Requested size: 166.6511pt x 113.80908pt.
 [14
 
  <../plots/plot_performance_histogram.png> <../plots/confusion_matrix_20.png>]
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 File: ../plots/plot_performance_histogram.png Graphic file (type png)
 <use ../plots/plot_performance_histogram.png>
 Package pdftex.def Info: ../plots/plot_performance_histogram.png  used on input
- line 185.
+ line 186.
 (pdftex.def)             Requested size: 128.02927pt x 88.19794pt.
 File: ../plots/confusion_matrix_20.png Graphic file (type png)
 <use ../plots/confusion_matrix_20.png>
 Package pdftex.def Info: ../plots/confusion_matrix_20.png  used on input line 1
-85.
+86.
 (pdftex.def)             Requested size: 166.6511pt x 113.80908pt.
 [15
 
 ]
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 File: ../plots/plot_performance_histogram.png Graphic file (type png)
 <use ../plots/plot_performance_histogram.png>
 Package pdftex.def Info: ../plots/plot_performance_histogram.png  used on input
- line 185.
+ line 186.
 (pdftex.def)             Requested size: 128.02927pt x 88.19794pt.
 File: ../plots/confusion_matrix_20.png Graphic file (type png)
 <use ../plots/confusion_matrix_20.png>
 Package pdftex.def Info: ../plots/confusion_matrix_20.png  used on input line 1
-85.
+86.
 (pdftex.def)             Requested size: 166.6511pt x 113.80908pt.
 [16
 
 ]
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 
-Overfull \hbox (0.65613pt too wide) in alignment at lines 185--185
+Overfull \hbox (0.65613pt too wide) in alignment at lines 186--186
 [][][][] 
  []
 
 File: ../plots/plot_performance_histogram.png Graphic file (type png)
 <use ../plots/plot_performance_histogram.png>
 Package pdftex.def Info: ../plots/plot_performance_histogram.png  used on input
- line 185.
+ line 186.
 (pdftex.def)             Requested size: 128.02927pt x 88.19794pt.
 File: ../plots/confusion_matrix_20.png Graphic file (type png)
 <use ../plots/confusion_matrix_20.png>
 Package pdftex.def Info: ../plots/confusion_matrix_20.png  used on input line 1
-85.
+86.
 (pdftex.def)             Requested size: 166.6511pt x 113.80908pt.
 [17
 
@@ -1197,11 +1209,11 @@ Package pdftex.def Info: ../plots/confusion_matrix_20.png  used on input line 1
 \tf@snm=\write8
 \openout8 = `presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 193.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 193.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 194.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 194.
  (./presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 193.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 193.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 194.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 194.
 Package rerunfilecheck Info: File `presentation.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 
@@ -1212,7 +1224,7 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 Here is how much of TeX's memory you used:
  20154 strings out of 492982
  397373 string characters out of 6134896
- 474627 words of memory out of 5000000
+ 474626 words of memory out of 5000000
  23218 multiletter control sequences out of 15000+600000
  15616 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1224,7 +1236,7 @@ texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dis
 t/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on presentation.pdf (18 pages, 664879 bytes).
+Output written on presentation.pdf (18 pages, 665220 bytes).
 PDF statistics:
  558 PDF objects out of 1000 (max. 8388607)
  499 compressed objects within 5 object streams

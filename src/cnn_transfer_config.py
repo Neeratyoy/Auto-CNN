@@ -2,10 +2,12 @@ import numpy as np
 import torch.nn as nn
 
 
-# define ConvNet #######################################################################################################
 class ConfigurableNet(nn.Module):
     """
-    Example of a configurable network. (No dropout or skip connections supported)
+    Exactly the same structure as the ConfigurableNet in cnn.py
+    Primary difference is that __init__ takes another parameter which is the incumbent (old_config) of the PARENT BOHB
+    run from which the configuration has been transferred and updated by the new BOHB run's incumbent (new_config).
+    Both the new_config and old_config share the responsibility of initializing the CNN model.
     """
     def _update_size(self, dim, padding, dilation, kernel_size, stride):
         """
@@ -14,8 +16,8 @@ class ConfigurableNet(nn.Module):
         """
         # return int(np.floor((dim + 2 * padding - dilation * (kernel_size - 1) + 1) / stride))
         return int(np.floor((dim + 2*padding - (dilation*(kernel_size-1) + 1))/stride + 1))
-        # output_size=(w+2*pad-(d(k-1)+1))/s+1, https://github.com/vlfeat/matconvnet/issues/1010
         # ^ works for both maxpool=T and maxpool=F
+        # ^ output_size=(w+2*pad-(d(k-1)+1))/s+1, https://github.com/vlfeat/matconvnet/issues/1010
 
     def __init__(self, old_config, new_config, num_classes=10, height=28, width=28, channels=1):
         """
@@ -28,33 +30,37 @@ class ConfigurableNet(nn.Module):
         """
         super(ConfigurableNet, self).__init__()
         self.config = old_config
+
+        # Converting True/False str to bool (probably not the most efficient way)
+        # Parent BOHB configurations
         dropout_dict = {'True': True, 'False': False}
         dropout = dropout_dict[old_config['dropout']]
         batchnorm_dict = {'True':True, 'False':False}
         batchnorm = batchnorm_dict[old_config['batchnorm']]
 
-        channel_dict = {'1': int(new_config['channel_1'])}
-        for i in range(2, old_config['n_conv_layer']+1):
+        # Constructing actual channel sizes since channel_1 is int while others are multiplicative factors as str
+        channel_dict = {'1': int(new_config['channel_1'])} # Channel size coming from new BOHB
+        for i in range(2, old_config['n_conv_layer']+1):   # Number of conv layer coming from parent BOHB
             # Multiplying the multiplicative factor with previous channel size
             channel_dict[str(i)] = int(np.floor(float(new_config['channel_'+str(i)]) * channel_dict[str(i-1)]))
 
         # Keeping track of internals like changeing dimensions
-        n_convs = old_config['n_conv_layer']
-        n_fc_layers = new_config['n_fc_layer']
+        n_convs = old_config['n_conv_layer']     # Number of conv layer coming from parent BOHB
+        n_fc_layers = new_config['n_fc_layer']   # Number of fully connected layers coming from new BOHB
         n_layers = n_convs + n_fc_layers
         conv_layer = 0
         self.layers = []
         self.mymodules = nn.ModuleList()
-        # out_channels = channels
         out_channels = channel_dict['1']
 
         # Create sequential network
         for layer in range(n_layers):
             if n_convs >= 1:  # This way it only supports multiple convolutional layers at the beginning (not inbetween)
                 l = []  # Conv layer can be sequential layer with Batch Norm and pooling
-                padding = old_config['padding_'+str(layer+1)] # 5 0 #2
-                stride = old_config['stride_'+str(layer+1)] # 5 0 #21
-                kernel_size = int(old_config['kernel_'+str(layer+1)]) # 5
+                # Kernel, padding, stride come from parent BOHB
+                padding = old_config['padding_'+str(layer+1)]
+                stride = old_config['stride_'+str(layer+1)]
+                kernel_size = int(old_config['kernel_'+str(layer+1)])
                 dilation = 1  # fixed
                 # if conv_layer == 0:
                 #     out_channels = 3
@@ -74,18 +80,12 @@ class ConfigurableNet(nn.Module):
                 l.append(c)
 
                 # batchnorm yes or no?
-                # try:
-                #     batchnorm = batchnorm_dict[config['batchnorm_'+str(layer+1)]]
-                # except KeyError:
-                #     batchnorm = config['batchnorm_'+str(layer+1)] = False
-                # batchnorm = False
                 if batchnorm:
                     b = nn.BatchNorm2d(channels)
                     l.append(b)
 
                 # determine activation function,
-                # activation = config['activation_'+str(layer+1)]
-                activation = old_config['activation']
+                activation = old_config['activation']   # Parent BOHB
                 # activation = 'tanh'
                 if activation == 'relu':
                     act = nn.ReLU()
@@ -101,7 +101,6 @@ class ConfigurableNet(nn.Module):
                 # Adding Dropout
                 if dropout:
                     l.append(nn.Dropout(0.2))
-                    # l.append(nn.Dropout(config['dropout_'+str(layer+1)]))
 
                 # do max pooling yes or no?
                 maxpool_dict = {'True':True, 'False':False}
@@ -130,8 +129,8 @@ class ConfigurableNet(nn.Module):
                 if n_convs == 0:  # compute fully connected input size
                     channels = height * width * channels
                     n_convs -= 1
-                    #           in_channels, out_channels
-                output_count = new_config['fc_nodes']  # 500 
+                # Number of neurons in FC layer comes from new BOHB
+                output_count = new_config['fc_nodes']
                 lay = []
                 lay.append(nn.Linear(channels, output_count))
                 if batchnorm:

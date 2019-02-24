@@ -122,15 +122,10 @@ def train(dataset,
     else:
         raise NotImplementedError
 
-    # WEIGHTED SAMPLING == STRATIFIED SAMPLING
-    # class_sample_count = [10, 1, 20, 3, 4] # dataset has 10 class-1 samples, 1 class-2 samples, etc.
-    # weights = 1 / torch.Tensor(class_sample_count)
-    # sampler = torch.utils.data.sampler.WeightedRandomSampler(weights, batch_size)
-    # trainloader = data_utils.DataLoader(train_dataset, batch_size = batch_size, shuffle=True, sampler = sampler)
-
     # fidelity_limit = 9  # Budget/Epochs under which the data will be sampled
     #
-    # Cheap evaluations for low budget (Optimistic compromise) - Samples f_min samples from each class
+    # Cheap evaluations for low budget (Optimistic compromise)
+    # Samples f_min samples from each class
     # where f_min = # of data points available for the lowest frequent class
     #
     # if num_epochs < fidelity_limit:
@@ -212,7 +207,6 @@ def train(dataset,
         for i_batch, (images, labels) in enumerate(train_loader):
             images = images.to(device)
             labels = labels.to(device)
-
             # Forward -> Backward <- passes
             outputs = model(images)    # outputs.detach().numpy()
             if type(train_criterion) == torch.nn.MSELoss:

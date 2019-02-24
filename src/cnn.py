@@ -29,24 +29,11 @@ class ConfigurableNet(nn.Module):
         super(ConfigurableNet, self).__init__()
         self.config = config
 
-        # Converting True/False str to bool (probably not the most efficient ways)
+        # Converting True/False str to bool (probably not the most efficient way)
         dropout_dict = {'True': True, 'False': False}
         dropout = dropout_dict[config['dropout']]
         batchnorm_dict = {'True':True, 'False':False}
         batchnorm = batchnorm_dict[config['batchnorm']]
-
-        # determine activation function
-        activation = config['activation']
-        # activation = 'tanh'
-        if activation == 'relu':
-            act = nn.ReLU()
-        elif activation == 'sigmoid':
-            act = nn.Sigmoid()
-        elif activation == 'tanh':
-            act = nn.Tanh()
-        else:
-            # Add more activation funcs?
-            raise NotImplementedError
 
         # Constructing actual channel sizes since channel_1 is int while others are multiplicative factors as str
         channel_dict = {'1': int(config['channel_1'])}
@@ -95,6 +82,18 @@ class ConfigurableNet(nn.Module):
                     l.append(b)
 
                 # add activation function
+                # determine activation function
+                activation = config['activation']
+                # activation = 'tanh'
+                if activation == 'relu':
+                    act = nn.ReLU()
+                elif activation == 'sigmoid':
+                    act = nn.Sigmoid()
+                elif activation == 'tanh':
+                    act = nn.Tanh()
+                else:
+                    # Add more activation funcs?
+                    raise NotImplementedError
                 l.append(act)
 
                 # Adding Dropout conditionally
@@ -137,6 +136,19 @@ class ConfigurableNet(nn.Module):
                     b = nn.BatchNorm1d(output_count)
                     lay.append(b)
                 # add activation function
+                # NOTE: The following block of code is redundant and can be taken out of the scope of the for loop
+                #       However, doing so, replicated the activation multiple times weirdly. Hence, the hack.
+                activation = config['activation']
+                # activation = 'tanh'
+                if activation == 'relu':
+                    act = nn.ReLU()
+                elif activation == 'sigmoid':
+                    act = nn.Sigmoid()
+                elif activation == 'tanh':
+                    act = nn.Tanh()
+                else:
+                    # Add more activation funcs?
+                    raise NotImplementedError
                 lay.append(act)
                 # add dropout conditionally
                 if dropout:

@@ -88,7 +88,8 @@ def plot_confusion_matrix(cm, classes, out_dir,name, dataset='KMNIST', cmap=plt.
     plt.yticks(tick_marks, classes, fontsize=4)
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
-    # Marks the cells with actual values - Disabled for legibility on the large K49 [49x49] matrix
+    # Disabled for legibility on the large K49 [49x49] matrix
+    # Marks the cells with actual values
     # for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
     #     plt.text(j, i, format(cm[i, j], fmt),
     #              horizontalalignment="center",
@@ -105,13 +106,16 @@ if __name__ == '__main__':
                         help='Directory that has config.json and results.json from a BOHB run')
     parser.add_argument('-d', "--dataset", dest="dataset", type=str, default='KMNIST', choices=['KMNIST', 'K49'],
                         help='Dataset to evaluate the incumbent configuration on')
-    parser.add_argument('-e', "--epochs", dest="epochs", type=int, default=1, choices=range(1,21),
+    parser.add_argument('-e', "--epochs", dest="epochs", type=int, default=1, choices=list(range(1,21)),
                         help='Number of epochs for training')
     parser.add_argument('-t', "--transfer", dest="transfer", type=bool, default=False, choices=[True, False],
                         help='Set to True if evaluating a Transfer Config BOHB output')
     parser.add_argument('-a', "--data_augmentation", dest="data_augmentation", type=str, default=None,
                         help='Set to True if Training data needs to be augmented')
+    parser.add_argument('-v', '--verbose', default='INFO', choices=['INFO', 'DEBUG'], help='verbosity')
     args, kwargs = parser.parse_known_args()
+    log_lvl = logging.INFO if args.verbose == 'INFO' else logging.DEBUG
+    logging.basicConfig(level=log_lvl)
 
     result = hpres.logged_results_to_HBS_result(args.config_dir)
     id2conf = result.get_id2config_mapping()
@@ -160,7 +164,7 @@ if __name__ == '__main__':
         train_criterion=torch.nn.CrossEntropyLoss,
         model_optimizer=opti_dict[inc_config['model_optimizer']],
         opti_aux_param=opti_aux_param,
-        data_augmentations=data_augmentation, 
+        data_augmentations=data_augmentation,
         save_model_str=None
         # test=True
     )
