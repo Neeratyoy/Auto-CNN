@@ -8,22 +8,25 @@ output:
 The following repo is a cloned extension of the original base repo that we were given. \newline
 https://bitbucket.org/biedenka/ml4aad_ws18_project/src/master/
 
-The \textit{src/} is maintained as per the original. However, the contents of the original \textit{src/} has been completely revamped. Details of which are given below.
+The src/ is maintained as per the original. However, the contents of the original src/ has been completely revamped. Details of which are given below.
 
 The directory contains additional folders, namely:
 
-* \textit{data/} where datasets.py dumped the KMNIST and K49 datasets
-* \textit{plots/} contains certain images and plots that are being used for report generation
-* \textit{reading/} certain reading material collected for my reference during literature survey
-* \textit{report/} the .tex files and the final PDF of the presentation is contained here
+* data/ where datasets.py dumped the KMNIST and K49 datasets
+* plots/ contains certain images and plots that are being used for report generation
+* reading/ certain reading material collected for my reference during literature survey
+* report/ the .tex files and the final PDF of the presentation is contained here
 
-The \textit{src/} folder contains the .py scripts that were created for this project and a folder called \textit{experiments/} which house the logged results of the experiments carried out. There is also a file called architecture.txt which contains the specfications of the hardware used to generate the numbers inside \textit{experiments/}. 
+The src/ folder contains the .py scripts that were created for this project and a folder called experiments/ which house the logged results of the experiments carried out. There is also a file called architecture.txt which contains the specfications of the hardware used to generate the numbers inside experiments/. 
 
 
 
 To run the default configuration given: 
 ```
-python3 original_main.py python3 original_main.py -d K49
+python3 original_main.py 
+```
+```
+python3 original_main.py -d K49
 ```
 
 
