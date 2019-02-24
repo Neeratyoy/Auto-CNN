@@ -78,7 +78,7 @@ class TransferWorker(Worker):
             opti_aux_param = old_config['momentum']
         else:
             opti_aux_param = None
-        data_augmentation = config['aug_prob']
+        data_augmentation = None # config['aug_prob'] # Not None when used
 
         train_score, train_loss, test_score, test_loss, train_time, test_time, total_model_params, _ = train(
             dataset=dataset,  # dataset to use
@@ -115,8 +115,8 @@ class TransferWorker(Worker):
         batch = CSH.UniformIntegerHyperparameter('batch_size', lower=100, upper=1000, default_value=100, log=True)
         # ^ https://stats.stackexchange.com/questions/164876/tradeoff-batch-size-vs-number-of-iterations-to-train-a-neural-network
         # ^ https://stats.stackexchange.com/questions/49528/batch-gradient-descent-versus-stochastic-gradient-descent
-        aug_prob = CSH.UniformFloatHyperparameter('aug_prob', lower=0, upper=0.5, default_value=0)
-        config_space.add_hyperparameters([batch, aug_prob])
+        # aug_prob = CSH.UniformFloatHyperparameter('aug_prob', lower=0, upper=0.5, default_value=0)
+        config_space.add_hyperparameters([batch])
 
         ############################
         # ARCHITECTURE HYPERPARAMS #

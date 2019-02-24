@@ -1,0 +1,2 @@
+Train Accuracy of the model on the 60000 train images: 96.16166666666666%
+Test Accuracy of the model on the 10000 test images: 88.5%

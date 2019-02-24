@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+
+<title>CAVE</title>
+<link href="html/css/accordion.css" rel="stylesheet" />
+<link href="html/css/table.css" rel="stylesheet" />
+<link href="html/css/lightbox.min.css" rel="stylesheet" />
+<link href="html/css/help-tip.css" rel="stylesheet" />
+<link href="html/css/global.css" rel="stylesheet" />
+<link href="html/css/back-to-top.css" rel="stylesheet" />
+<link href="html/css/tabs.css" rel="stylesheet" />
+
+<link href="html/css/bokeh-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-widgets-1.0.1.min.css" rel="stylesheet" type="text/css">
+<link href="html/css/bokeh-tables-1.0.1.min.css" rel="stylesheet" type="text/css">
+
+<script src="html/js/tabs.js"></script>
+
+<script src="html/js/bokeh-1.0.1.min.js"></script>
+<script src="html/js/bokeh-widgets-1.0.1.min.js"></script>
+<script src="html/js/bokeh-tables-1.0.1.min.js"></script>
+
+<!--Below here are the includes of scripts for the report (e.g. bokeh)-->
+<script src="content/js/BudgetCorrelation__4_script.js"></script>
+<script src="content/js/BOHBLearningCurves__5_script.js"></script>
+
+<!--Above here are the includes of scripts for the report (e.g. bokeh)-->
+
+</head>
+<body>
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
+<script src="html/js/lightbox-plus-jquery.min.js"></script>
+<header>
+    <div class='l-wrapper'>
+        <img class='logo logo--configurator' src="html/images/BOHB_logo.png" />
+        <img class='logo logo--ml' src="html/images/automl-logo.png" />
+    </div>
+</header>
+<div class='l-wrapper'>
+<h1>CAVE</h1>
+<div class="accordion">Budget Correlation </div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="0adbea21-711f-4141-8491-d552913e6aa7"></div>
+</div>
+</div><div class="accordion">BOHB Learning Curves <div class="help-tip"><p>Visualizing the learning curves of the individual Hyperband-iterations. Model based picks are marked with a cross. The config-id tuple denotes (iteration, stage, id_within_stage), where the iteration is a hyperband iteration and the stage is the index of the budget used. It can be interpreted as a nested index-identifier.</p></div></div>
+<div class="panel">
+<div align="center">
+
+<div class="bk-root" id="0ebf1a82-6be3-476b-9748-5db3b056ed6e"></div>
+</div>
+</div><div class="accordion">Incumbents Over Budgets <div class="help-tip"><p>Show the incumbents for each budget (i.e. the best configuration by kernel-estimation using data from that budget).</p></div></div>
+<div class="panel">
+<div align="center">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>budget_1.0</th>
+      <th>budget_2.0</th>
+      <th>budget_4.0</th>
+      <th>budget_8.0</th>
+      <th>budget_16.0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>activation</th>
+      <td>tanh</td>
+      <td>relu</td>
+      <td>relu</td>
+      <td>relu</td>
+      <td>relu</td>
+    </tr>
+    <tr>
+      <th>batch_size</th>
+      <td>200</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <th>batchnorm</th>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>channel_1</th>
+      <td>6</td>
+      <td>12</td>
+      <td>12</td>
+      <td>12</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>dropout</th>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>kernel_1</th>
+      <td>7</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>learning_rate</th>
+      <td>0.00320601</td>
+      <td>0.00421596</td>
+      <td>0.00421596</td>
+      <td>0.00421596</td>
+      <td>0.00421596</td>
+    </tr>
+    <tr>
+      <th>model_optimizer</th>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+      <td>adam</td>
+    </tr>
+    <tr>
+      <th>n_conv_layer</th>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>n_fc_layer</th>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>stride_1</th>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>amsgrad</th>
+      <td>True</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+      <td>False</td>
+    </tr>
+    <tr>
+      <th>fc_1</th>
+      <td>187</td>
+      <td>40</td>
+      <td>40</td>
+      <td>40</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th>fc_2</th>
+      <td>311</td>
+      <td>364</td>
+      <td>364</td>
+      <td>364</td>
+      <td>364</td>
+    </tr>
+    <tr>
+      <th>maxpool_1</th>
+      <td>False</td>
+      <td>inactive</td>
+      <td>inactive</td>
+      <td>inactive</td>
+      <td>inactive</td>
+    </tr>
+    <tr>
+      <th>Cost</th>
+      <td>0.781</td>
+      <td>0.336</td>
+      <td>0.277</td>
+      <td>0.279</td>
+      <td>0.302</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<footer>
+    <div class='l-wrapper'>
+        Generated by <a href="https://github.com/automl/CAVE">CAVE v1.1.4</a> and developed by
+        <a href="http://www.automl.org">autoML</a> | Optimized for Chrome and Firefox
+    </div>
+</footer>
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+for (i = 0; i < acc.length; i++) {
+    acc[i].onclick = function(){
+        this.classList.toggle("active");
+        this.nextElementSibling.classList.toggle("show");
+  }
+}
+</script>
+<script src="html/js/back-to-top.js"></script>
+</body>
+</html>
