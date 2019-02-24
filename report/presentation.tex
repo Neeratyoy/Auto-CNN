@@ -176,13 +176,14 @@
 	\end{tabular*}
 	\column{0.48\textwidth}
 	\begin{figure}
-		\onslide<2->\includegraphics[height=3.1cm, width=4.5cm]{../plots/plot_performance_histogram.png}
+		\onslide<2->\includegraphics[height=3.7cm,width=4.5cm]{../plots/plot_performance_histogram.png}
+		\onslide<3->\includegraphics[height=3.8cm, width=5.5cm]{../plots/confusion_matrix_20.png}
 	\end{figure}
-	\onslide<3->\includegraphics[height=4cm, width=\textwidth]{../plots/confusion_matrix_20.png}
+
 \end{columns}
 \pause
-\vspace{0.2cm}
-\onslide<3->{\underline{Issues}: (i) Under-represented classes; (ii) Slow experiments; } 
+%\vspace{0.2cm}
+\onslide<3->{\underline{Issues}: (i) Slow experiments; (ii) Under-represented classes; } 
 \onslide<4-> [(iii) What if only K49?]
 \end{frame}
 
@@ -192,37 +193,33 @@
 %%
 \begin{frame}
 \frametitle{In Conclusion...}
+%\vspace{-0.3cm}
 \begin{columns}
 	\column{0.5\textwidth}
-	Possible improvements:
+	\onslide<1->Possible improvements:
 	\begin{itemize}
-		\item Fidelity (data subsets)
-		\begin{itemize}
+		\onslide<1->\item Fidelity (data subsets)
+		\onslide<1->\begin{itemize}
 			\item K49: 90.20\% $\rightarrow$ 93.85\%
 		\end{itemize} 
-		\pause
-		\item Data Augmentation
-		\begin{itemize}
+		\onslide<2->\item Data Augmentation
+		\onslide<2->\begin{itemize}
 			\item K49: 94.28\% $\rightarrow$ 93.37\% (with fidelity)
 		\end{itemize}
-		\pause
-		\item Better/more parameters for transfer configuration
-		\begin{itemize}
+		\onslide<3->\item Better/more parameters for transfer configuration
+		\onslide<3->\begin{itemize}
 			\item Learning rate schedule
 			\item Optimizer
 		\end{itemize}
-		\pause
-		\item EPMs to try reduce parameter blow ups and runtimes
-		\pause
-		\item NAS cell search
-		\pause
-		\item Padding to go deeper (exploit sparsity)
+		\onslide<4->\item EPMs to try reduce parameter blow ups and runtimes
+		\onslide<5->\item NAS cell search
+		\onslide<6->\item Padding to go deeper (exploit sparsity)
 	\end{itemize}
 	\hrule
 	\vspace{0.2cm}
-	\underline{Final Numbers}:
+	\onslide<7->{\underline{Final Numbers}:}
 	\vspace{0.15cm}
-	\begin{tabular}{|c|c|c|}
+	\onslide<7->\begin{tabular}{|c|c|c|}
 		%	\onslide<3->\begin{tabular*}{\textwidth}{|>{\small}c|>{\small}c|>{\small}c|>{\small}c|}
 		\hline
 %		\multicolumn{1}{|p{1cm}|}{\centering Dataset} &
@@ -235,12 +232,21 @@
 		K49 & 54.43\% & 94.28\%  \\
 		\hline
 	\end{tabular}
-	KMNIST: \textit{from transferring best K49 model}\\
-	K49: \textit{from transferring incumbent config on KMNIST and then BOHB on K49}\\
-	\column{0.48\textwidth}
-	\includegraphics[height=4cm, width=6cm]{../plots/k49_confusion_matrix_default.png}
-	\includegraphics[height=5cm, width=7cm]{../plots/confusion_matrix_20.png}
-\end{columns}\end{frame}
+	\onslide<7->{\underline{KMNIST}: \textit{from transferring best K49 model}}\\
+	\onslide<7->{\underline{K49}: \textit{from transferring incumbent config on KMNIST and then BOHB on K49}}\\
+
+
+	\column{0.5\textwidth}
+%	\onslide<1>{\includegraphics[width=\textwidth]{../plots/plot_correlation_across_budgets.png}}
+	\begin{onlyenv}<1-7>
+	\begin{center}
+		\includegraphics<1>[height=2cm,width=2cm]{../plots/plot_correlation_across_budgets.png}
+		\includegraphics<7>[height=4cm,width=\textwidth]{../plots/kmnist_confusion_matrix_default.png}
+		\includegraphics<7>[height=4cm,width=\textwidth]{../plots/confusion_matrix.png}
+	\end{center}
+	\end{onlyenv}
+\end{columns}
+\end{frame}
 
 %\begin{onlyenv}<3-6>
 %	\begin{center}

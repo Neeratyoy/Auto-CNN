@@ -64,7 +64,7 @@ class TransferWorker(Worker):
         # For a neural net training, the alloted budget == # of epochs
         num_epochs = int(budget)
         batch_size = int(config['batch_size'])
-        learning_rate = config['learning_rate']
+        learning_rate = old_config['learning_rate']
         # Fixing the loss to CrossEntropy and not hyperparameterizing the loss
         training_loss = torch.nn.CrossEntropyLoss
         # Checking for the type of optimizer and looking for the relevant auxiliary parameter

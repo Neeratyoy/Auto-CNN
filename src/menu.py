@@ -5,9 +5,8 @@ if __name__=="__main__":
     print("3. Run Transfer Config")
     print("4. Run default")
     print("5. Exit")
-    print("Select choice (1-5): ",)
     try:
-        option = int(input())
+        option = int(input("Select choice (1-5): "))
     except:
         option = 0
 
@@ -31,10 +30,10 @@ if __name__=="__main__":
         print("1. Run simple BOHB")
         print("2. Run Transfer Learning")
         print("3. Run Transfer Config")
-        print("4. Exit")
-        print("Select choice (1-4): ",)
+        print("4. Run default")
+        print("5. Exit")
         try:
-            option = int(input())
+            option = int(input("Select choice (1-5): "))
         except:
             option = 0
 
