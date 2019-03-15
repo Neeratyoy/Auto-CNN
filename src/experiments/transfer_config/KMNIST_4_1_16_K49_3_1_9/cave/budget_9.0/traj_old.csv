@@ -1,3 +1,0 @@
-"CPU Time Used","Estimated Training Performance","Wallclock Time","Incumbent ID","Automatic Configurator (CPU) Time","Configuration..."
--1.000000, 0.145998, 10610.938740, 1, 10611.938740, batch_size='659', channel_1='6', channel_2='3', n_fc_layer='3', fc_nodes='718'
--1.000000, 0.145998, 27533.709298, 1, 27534.709298, batch_size='659', channel_1='6', channel_2='3', n_fc_layer='3', fc_nodes='718'
