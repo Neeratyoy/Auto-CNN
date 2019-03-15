@@ -1,6 +1,6 @@
 # Auto-configuration of CNNs [Automated Algorithm Design] 
 
-The following repo is a sanitized version of the project submit for the AutoML coursework at University of Freiburg.
+The following repo is a sanitized version of the project submitted for the AutoML coursework at University of Freiburg.
 The src/ folder contains the relevant source code and further details of the code structure.
 
 As on overview:
@@ -40,7 +40,7 @@ A simple BOHB was run for 20 iterations.
 
 
 For K49:
-The best returned configuration from KMNIST was chosen. The size of the channels, number of fully connected layers and neurons, batch size was reparameterized and input to BOHB fo4 K49. 
+The best returned configuration from KMNIST was chosen. The size of the channels, number of fully connected layers and neurons, batch size was reparameterized and input to BOHB for K49. 
 
 
 
