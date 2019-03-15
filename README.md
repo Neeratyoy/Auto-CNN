@@ -1,81 +1,50 @@
-# ML4AAD WS18/19 Final Project
+# Auto-configuration of CNNs [Automated Algorithm Design] 
 
-The following repo is a cloned extension of the original base repo that we were given.
-https://bitbucket.org/biedenka/ml4aad_ws18_project/src/master/
+The following repo is a sanitized version of the project submit for the AutoML coursework at University of Freiburg.
+The src/ folder contains the relevant source code and further details of the code structure.
 
-The src/ is maintained as per the original. However, the contents of the original src/ has been completely revamped. Details of which are given below.
+As on overview:
 
-The directory contains additional folders, namely:
+* The task was to train CNN models for two datasets [KMNIST] and [K49]
+* With minimal or no manual tuning for the architecture or parameters
+* The problem was approached as a Hyper-parameter Optimization (HPO) task 
+    * With Neural Architecture Search (NAS) as an HPO
+    * Tuning of training parameters as an HPO 
+* [BOHB] was used as a tool for HPO
+* Overall, transfer learning was leveraged to optimize performance for the datasets
+    
 
-* data/ where datasets.py dumped the KMNIST and K49 datasets
-* plots/ contains certain images and plots that are being used for report generation
-* reading/ certain reading material collected for my reference during literature survey
-* report/ the .tex files and the final PDF of the presentation is contained here
+_Hardware used_:
 
-The src/ folder contains the .py scripts that were created for this project and a folder called experiments/ which house the logged results of the experiments carried out. There is also a file called architecture.txt which contains the specfications of the hardware used to generate the numbers inside experiments/. 
-
-
-
-To run the default configuration given: 
-```
-python3 original_main.py 
-```
-```
-python3 original_main.py -d K49
-```
+* All scripts were confined to run one CPU at a time
+* Utilizing a single core of Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
 
 
-To run basic BOHB:
+_Compute budget_:
 
-* The main interface is the bohb_main.py 
-* It is dependent on main.py, BOHB_plotAnalysis.py, cnn.py 
-* To run BOHB on K49 with eta=2, min_budget=3, max_budget=10, n_iterations=10, the following command can be given
-```
-python3 bohb_main.py --dataset K49 --eta 2 --min_budget 3 --max_budget 10 --n_iterations 10 --out_dir [path to write destination]
-```
+* A maximum budget of 24 hours on the above specification
 
 
-To run transfer learning:
+_Results obtained_:
 
-* The main interface is the transfer_learning.py 
-* It is dependent on main.py, main_transfer_learning.py, BOHB_plotAnalysis.py, cnn.py 
-* To train BOHB's incumbent configuration on one dataset (source) and subsequently train on another dataset (dest) the following command can be given
-```
-python3 transfer_learning.py --dataset_source KMNIST --dataset_dest K49 --config_dir [path where BOHB results exist] --epochs_source 12 --epochs_dest 20
-```
+Dataset | Keras simple CNN [benchmark] | Auto-CNN |
+--- | :---: | :---: | 
+KMNIST | 95.12% | 97.89% |
+K49 | 89.25% | 94.28% |  
 
-
-To run transfer of configuration:
-
-* The main interface is the transfer_config.py
-* It is dependent on main_transfer_config.py, BOHB_plotAnalysis.py, cnn_transfer_config.py
-* To train BOHB's incumbent configuration with BOHB again with a reduced hyperparameter space, the following command can be given
-```
-python3 transfer_config.py --dataset K49 --eta 2 --min_budget 3 --max_budget 10 --n_iterations 10 --config_dir [path where BOHB results exist] --out_dir [path to write destination]
-```
+_Note_: As simple NAS without skip connections, or specialized architectures (using which can improve results and increase compute time too)
 
 
-To evaluate any incumbent from BOHB by training on entire train set and testing on test:
-```
-python3 generate_result.py --dataset K49 --config_dir [path where BOHB results exist] --epochs 20
-```
-In case of testing a configuration from the run of transfer_config.py an additional argument '--transfer True' is needed
-```
-python3 generate_result.py --dataset K49 --epochs 20 --transfer True --config_dir [path where BOHB results exist] 
-```
+For KMNIST:
+A simple BOHB was run for 20 iterations.
+
+
+For K49:
+The best returned configuration from KMNIST was chosen. The size of the channels, number of fully connected layers and neurons, batch size was reparameterized and input to BOHB fo4 K49. 
 
 
 
-Other Python scripts are either called by the aforementioned primary scripts or have been used for other analysis (such as successive_halving.py)
-
-
-The experiments/ folder contain logs and results of the analysis/experiments carried out for the project:
-
-* This folder contains an excel sheet with the details or numbers for the experiments recorded
-* This folder also contains two JSONs which contain the best performing configurations obtained for KMNIST and K49
-* The folders are generally named in the format x_y_z where x, y, z are parameters to BOHB with x=eta, y=min_budget, z=max_budget
-
-
-```
-contact: neeratyoy@gmail.com
-```
+[KMNIST]: https://github.com/rois-codh/kmnist
+[K49]: https://github.com/rois-codh/kmnist
+[BOHB]: https://automl.github.io/HpBandSter/build/html/optimizers/bohb.html
+[benchmark]: https://github.com/rois-codh/kmnist#benchmarks--results-
