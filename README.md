@@ -8,8 +8,8 @@ As on overview:
 * The task was to train CNN models for two datasets [KMNIST] and [K49]
 * With minimal or no manual tuning for the architecture or parameters
 * The problem was approached as a Hyper-parameter Optimization (HPO) task 
-    * With Neural Architecture Search (NAS) as an HPO
-    * Tuning of training parameters as an HPO 
+    * With Neural Architecture Search (NAS) as HPO
+    * Tuning of training parameters as HPO 
 * [BOHB] was used as a tool for HPO
 * Overall, transfer learning was leveraged to optimize performance for the datasets
     
@@ -32,7 +32,7 @@ Dataset | Keras simple CNN [benchmark] | Auto-CNN |
 KMNIST | 95.12% | 97.89% |
 K49 | 89.25% | 94.28% |  
 
-_Note_: As simple NAS without skip connections, or specialized architectures (using which can improve results and increase compute time too)
+_Note_: Results are using simple NAS without skip connections, or specialized architectures (using which can improve results and may increase compute time too)
 
 
 For KMNIST:
